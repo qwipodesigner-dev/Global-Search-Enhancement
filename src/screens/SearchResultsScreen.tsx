@@ -10,10 +10,10 @@ import { SegmentedTabs } from '../components/SegmentedTabs';
 import { DistributorProductCard } from '../components/DistributorProductCard';
 import { WholesalerProductCard } from '../components/WholesalerProductCard';
 import { NoResults, OtherTabHint, ScopedNoResults } from '../components/NoResults';
-import { BrandTile, CategoryCard } from '../components/EntityTiles';
+import { BrandTile } from '../components/EntityTiles';
 import { useSearch } from '../context/SearchContext';
 import { federatedSearch, productsInScope, didYouMean, hasAnyMatch } from '../search/engine';
-import { personalize, usualSubtitle } from '../search/personalize';
+import { personalize } from '../search/personalize';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SearchResults'>;
 
@@ -43,7 +43,7 @@ export function SearchResultsScreen({ navigation, route }: Props) {
     [rawProducts, isDist]
   );
 
-  const { list, yourUsual, personalizedLabel } = useMemo(
+  const { list, yourUsual } = useMemo(
     () => personalize(tabProducts, persona),
     [tabProducts, persona]
   );
@@ -64,24 +64,8 @@ export function SearchResultsScreen({ navigation, route }: Props) {
       crumbs: ['Brands', brand],
       filter: { brand, source: isDist ? 'distributor' : 'wholesaler' },
     });
-  const openCategory = (category: string) =>
-    navigation.navigate('ProductList', {
-      title: category,
-      crumbs: ['Categories', category],
-      filter: { category, source: isDist ? 'distributor' : 'wholesaler' },
-    });
-  // No brand filter here → no brand in the subheading, so the label always
-  // matches what's listed ("N Products").
-  const openDistributor = (distributor: string) =>
-    navigation.navigate('ProductList', {
-      title: distributor,
-      crumbs: ['Distributors', distributor],
-      filter: { distributor, source: 'distributor' },
-    });
-  const goCategory = (label?: string, id?: string) => { setScope({ kind: 'category', label, id }); setQuery(''); };
-  const goOffer = (label?: string, id?: string) => { setScope({ kind: 'offer', label, id }); setQuery(''); };
 
-  // Federated entity sections belong to the Distributors tab only.
+  // The federated Brands rail belongs to the Distributors tab only.
   const showFederated = isDist && hasQuery && !isScoped;
 
   // ── Edge cases ──
@@ -177,7 +161,7 @@ export function SearchResultsScreen({ navigation, route }: Props) {
             <Text style={styles.broadened}>Showing closest matches for “{query}”</Text>
           )}
 
-          {/* ── Federated sections (Distributors tab) ── */}
+          {/* ── Federated section (Distributors tab) — Brands only ── */}
           {showFederated && results.brands.length > 0 && (
             <Section title="Brands">
               <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.rail}>
@@ -188,43 +172,16 @@ export function SearchResultsScreen({ navigation, route }: Props) {
             </Section>
           )}
 
-          {showFederated && results.categories.length > 0 && (
-            <Section title="Categories">
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.rail}>
-                {results.categories.map((c) => (
-                  <CategoryCard key={c.id} category={c} onPress={() => openCategory(c.name)} />
-                ))}
-              </ScrollView>
-            </Section>
-          )}
-
-          {showFederated && results.offers.length > 0 && (
-            <Section title="Offers">
-              {results.offers.map((o) => (
-                <EntityRow key={o.id} icon="pricetags" iconColor={colors.marginGreen} title={o.name}
-                  sub={`${o.productIds.length} products in this deal`} onPress={() => goOffer(o.name, o.id)} />
-              ))}
-            </Section>
-          )}
-
-          {showFederated && results.distributors.length > 0 && (
-            <Section title="Distributors">
-              {results.distributors.map((dd) => (
-                <EntityRow key={dd.id} icon="storefront" title={dd.name} sub={`Carries ${dd.brands.join(', ')}`} onPress={() => openDistributor(dd.name)} />
-              ))}
-            </Section>
-          )}
-
           {/* ── Products ── */}
           {isDist ? (
             usualCount > 0 ? (
               <>
-                <ProductsHeader icon="repeat" text={personalizedLabel || 'Your Usual'} tint={colors.primary} />
+                <ProductsHeader icon="repeat" text="Previously Ordered" tint={colors.primary} />
                 {list.slice(0, usualCount).map((p) => (
-                  <DistributorProductCard key={p.id} product={p} yourUsual usualSub={usualSubtitle(p.id)} />
+                  <DistributorProductCard key={p.id} product={p} />
                 ))}
                 {list.length > usualCount && (
-                  <ProductsHeader icon="search" text={hasQuery ? `More matches for “${query}”` : 'More products'} />
+                  <ProductsHeader icon="search" text="More Results" />
                 )}
                 {list.slice(usualCount).map((p) => <DistributorProductCard key={p.id} product={p} />)}
               </>
@@ -269,20 +226,6 @@ function ProductsHeader({ icon, text, tint }: { icon: string; text: string; tint
   );
 }
 
-function EntityRow({ icon, iconColor, title, sub, onPress }:
-  { icon: string; iconColor?: string; title: string; sub?: string; onPress: () => void }) {
-  return (
-    <Pressable style={styles.entityRow} onPress={onPress}>
-      <View style={styles.entityIcon}><Ionicons name={icon as any} size={17} color={iconColor || colors.primary} /></View>
-      <View style={{ flex: 1 }}>
-        <Text style={styles.entityTitle}>{title}</Text>
-        {!!sub && <Text style={styles.entitySub}>{sub}</Text>}
-      </View>
-      <Ionicons name="chevron-forward" size={17} color={colors.textMuted} />
-    </Pressable>
-  );
-}
-
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: '#FBFBFB' },
 
@@ -321,19 +264,6 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5, textTransform: 'uppercase', marginBottom: 8,
   },
   rail: { gap: 8, paddingRight: 4 },
-
-
-  entityRow: {
-    flexDirection: 'row', alignItems: 'center', gap: 12,
-    backgroundColor: colors.white, borderWidth: 1, borderColor: colors.cardBorder,
-    borderRadius: radii.md, paddingVertical: 12, paddingHorizontal: 12, marginBottom: 8,
-  },
-  entityIcon: {
-    width: 34, height: 34, borderRadius: radii.sm, backgroundColor: colors.lightBlue,
-    alignItems: 'center', justifyContent: 'center',
-  },
-  entityTitle: { fontFamily: font.semibold, fontSize: 14, color: colors.textDark },
-  entitySub: { fontFamily: font.regular, fontSize: 11.5, color: colors.subText, marginTop: 2 },
 
   prodHead: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 10, marginTop: 4 },
   prodHeadText: { fontFamily: font.bold, fontSize: 14, color: colors.textDark },
