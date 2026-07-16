@@ -193,13 +193,13 @@ function line(
   }));
 }
 
-const K_OIL = ['oil', 'tel', 'cooking oil', 'edible oil'];
-const K_DAL = ['dal', 'daal', 'pulses'];
-const K_RICE = ['rice', 'chawal'];
-const K_ATTA = ['atta', 'flour', 'wheat', 'gehun'];
-const K_TEA = ['tea', 'chai'];
+const K_OIL = ['oil', 'cooking oil', 'edible oil'];
+const K_DAL = ['dal', 'pulses'];
+const K_RICE = ['rice'];
+const K_ATTA = ['atta', 'flour', 'wheat'];
+const K_TEA = ['tea'];
 const K_COFFEE = ['coffee', 'coffe'];
-const K_SOAP = ['soap', 'sabun'];
+const K_SOAP = ['soap'];
 const K_SHAMPOO = ['shampoo', 'hair care', 'hair'];
 
 const BASE: Base[] = [
@@ -292,7 +292,7 @@ const BASE: Base[] = [
 
   // ══ Dals and Pulses ══
   ...line('dal_shreya', 'Shreya Gold', 'Toor Dal', 'Dals and Pulses', 'Groceries',
-    [...K_DAL, 'toor', 'arhar'], '#C99A2E', 4, [
+    [...K_DAL, 'toor'], '#C99A2E', 4, [
       ['1 Bag, 30 Kg', '4,000', '3,379'],
       ['1 Kg Pack', '145', '124'],
       ['5 Kg Pack', '700', '598'],
@@ -308,7 +308,7 @@ const BASE: Base[] = [
       ['5 Kg Pack', '535', '468'],
     ]),
   ...line('dal_sampann_toor', 'Tata Sampann', 'Toor Dal', 'Dals and Pulses', 'Groceries',
-    [...K_DAL, 'toor', 'arhar'], '#C99A2E', 13, [
+    [...K_DAL, 'toor'], '#C99A2E', 13, [
       ['1 Kg Pack', '158', '138'],
       ['5 Kg Pack', '770', '672'],
     ]),
@@ -349,7 +349,7 @@ const BASE: Base[] = [
   ...line('atta_ashirvaad_sel', 'Aashirvaad', 'Select Sharbati Atta', 'Atta, Flours and Sooji', 'Groceries',
     [...K_ATTA, 'sharbati', 'select', 'aashirvaad'], '#B85E1E', 30, [['5 Kg Bag', '360', '313']]),
   ...line('atta_lalitha_rava', 'Sri Lalitha', 'Bombay Rava / Sooji', 'Atta, Flours and Sooji', 'Groceries',
-    ['sooji', 'rava', 'suji', 'semolina'], '#E0C56A', 22, [
+    ['sooji', 'rava', 'semolina'], '#E0C56A', 22, [
       ['1 Kg Pack', '62', '52'],
       ['5 Kg Bag', '300', '253'],
     ]),
@@ -358,20 +358,20 @@ const BASE: Base[] = [
 
   // ══ Salt, Sugar and Jaggery ══
   ...line('salt_tata', 'Tata', 'Salt Iodised', 'Salt, Sugar and Jaggery', 'Groceries',
-    ['salt', 'namak', 'iodised salt'], '#3B7FC4', 13, [
+    ['salt', 'iodised salt'], '#3B7FC4', 13, [
       ['1 Kg Pack', '28', '24'],
       ['1 Kg X 10 Pack', '280', '238'],
     ]),
   ...line('salt_tata_lite', 'Tata', 'Salt Lite', 'Salt, Sugar and Jaggery', 'Groceries',
-    ['salt', 'namak', 'lite'], '#5A9BD8', 32, [['1 Kg Pack', '42', '36']]),
+    ['salt', 'lite'], '#5A9BD8', 32, [['1 Kg Pack', '42', '36']]),
   ...line('sugar_madhur', 'Madhur', 'Pure & Hygienic Sugar', 'Salt, Sugar and Jaggery', 'Groceries',
-    ['sugar', 'cheeni', 'shakkar', 'madhur'], '#7DBE4E', 8, [
+    ['sugar', 'madhur'], '#7DBE4E', 8, [
       ['5 Kg Bag', '260', '228'],
       ['1 Kg Pack', '54', '47'],
       ['30 Kg Bag', '1,530', '1,340'],
     ]),
   ...line('jaggery_grb', 'GRB', 'Pure Jaggery Block', 'Salt, Sugar and Jaggery', 'Groceries',
-    ['jaggery', 'gud', 'bellam'], '#B5651D', 24, [
+    ['jaggery'], '#B5651D', 24, [
       ['1 Kg Pack', '95', '82'],
       ['5 Kg Pack', '460', '397'],
     ]),
@@ -456,12 +456,12 @@ const BASE: Base[] = [
   ...line('det_surf_matic', 'Surf Excel', 'Matic Front Load', 'Detergents and Dishwash', 'Home Care',
     ['detergent', 'matic', 'surf excel'], '#164C86', 39, [['1 Kg Pack', '230', '198']]),
   ...line('det_vim', 'Vim', 'Dishwash Bar', 'Detergents and Dishwash', 'Home Care',
-    ['dishwash', 'vim', 'bartan', 'utensil'], '#F4C21E', 21, [
+    ['dishwash', 'vim', 'utensil'], '#F4C21E', 21, [
       ['300 g X 4 Pack', '80', '68'],
       ['150 g X 6 Pack', '70', '60'],
     ]),
   ...line('det_vim_gel', 'Vim', 'Dishwash Gel', 'Detergents and Dishwash', 'Home Care',
-    ['dishwash', 'vim', 'gel', 'bartan'], '#D9AE18', 40, [['500 ml Bottle', '115', '99']]),
+    ['dishwash', 'vim', 'gel'], '#D9AE18', 40, [['500 ml Bottle', '115', '99']]),
 
   // ══ Chocolates and Biscuits ══
   ...line('bis_parle', 'Parle', 'Parle-G Gold Biscuits', 'Chocolates and Biscuits', 'Snacks & Branded Foods',
@@ -488,7 +488,7 @@ const BASE: Base[] = [
 
   // ══ Sauces, Spreads and Dips ══
   ...line('honey_dabur', 'Dabur', '100% Pure Honey', 'Sauces, Spreads and Dips', 'Snacks & Branded Foods',
-    ['honey', 'shahad', 'spread', 'dabur'], '#E0A21C', 12, [
+    ['honey', 'spread', 'dabur'], '#E0A21C', 12, [
       ['1 Kg Bottle', '495', '420'],
       ['500 g Bottle', '260', '221'],
     ]),
@@ -505,7 +505,7 @@ const BASE: Base[] = [
 
   // ══ Masala & Seasoning ══
   ...line('masala_chilli', 'Everest', 'Red Chilli Powder', 'Masala & Seasoning', 'Groceries',
-    ['red chilli', 'chilli', 'mirchi', 'lal mirch', 'masala', 'spice', 'red', 'powder'], '#C0392B', 18, [
+    ['red chilli', 'chilli', 'masala', 'spice', 'red', 'powder'], '#C0392B', 18, [
       ['200 g Box', '90', '78'],
       ['500 g Box', '215', '187'],
     ]),
@@ -528,7 +528,7 @@ const BASE: Base[] = [
 
   // ══ Dairy and Cheese ══
   ...line('dairy_amul_butter', 'Amul', 'Butter', 'Dairy and Cheese', 'Groceries',
-    ['butter', 'amul', 'makhan', 'dairy'], '#E23D3D', 16, [
+    ['butter', 'amul', 'dairy'], '#E23D3D', 16, [
       ['500 g Pack', '285', '256'],
       ['100 g X 10 Pack', '580', '522'],
     ]),
@@ -537,7 +537,7 @@ const BASE: Base[] = [
 
   // ══ Pickles and Chutney ══
   ...line('pickle_priya', 'Priya', 'Mango Pickle', 'Pickles and Chutney', 'Groceries',
-    ['pickle', 'achar', 'mango', 'priya'], '#D98E04', 29, [
+    ['pickle', 'mango', 'priya'], '#D98E04', 29, [
       ['1 Kg Jar', '210', '182'],
       ['500 g Jar', '115', '99'],
     ]),
@@ -587,7 +587,7 @@ const BASE: Base[] = [
       ['10 Kg Bag', '610', '545'],
     ]),
   ...line('wl_dal', 'Value Choice', 'Toor Dal', 'Dals and Pulses', 'Groceries',
-    [...K_DAL, 'toor', 'kandi pappu', 'loose', 'unbranded', 'white label'], '#D8C06A', 14, [
+    [...K_DAL, 'toor', 'loose', 'unbranded', 'white label'], '#D8C06A', 14, [
       ['30 Kg Bag', '4,350', '3,980'],
       ['1 Kg Pack', '158', '142'],
     ]),
@@ -783,30 +783,6 @@ export const orderHistory: OrderHistoryEntry[] = [
 export const trendingTerms = ['Cooking Oil', 'Toor Dal', 'Aashirvaad Atta', 'Red Label Tea', 'Shampoo', 'Sugar'];
 export const seedRecentSearches = ['Fortune Oil', 'Red Label', 'Moong Dal'];
 
-/** Synonym / vernacular dictionary (PRD Layer 1, Appendix C). */
-export const synonyms: Record<string, string[]> = {
-  tel: ['oil'],
-  chawal: ['rice'],
-  namak: ['salt'],
-  cheeni: ['sugar'],
-  shakkar: ['sugar'],
-  atta: ['atta', 'wheat', 'flour'],
-  gehun: ['wheat', 'atta', 'flour'],
-  dal: ['dal', 'pulses'],
-  daal: ['dal', 'pulses'],
-  sabun: ['soap'],
-  chai: ['tea'],
-  shahad: ['honey'],
-  mirchi: ['chilli'],
-  achar: ['pickle'],
-  makhan: ['butter'],
-  gud: ['jaggery'],
-  bellam: ['jaggery'],
-  suji: ['sooji', 'rava'],
-  rava: ['sooji', 'rava'],
-  bartan: ['dishwash'],
-  coffe: ['coffee'],
-};
 
 // ─────────────────────────────────────────────────────────────
 // Home screen rails
