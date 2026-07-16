@@ -6,48 +6,58 @@ import { RootStackParamList, ScopeParam } from '../navigation/types';
 import { colors, radii, font, layout } from '../theme/theme';
 import { DeviceStatusBar } from '../components/DeviceStatusBar';
 import { SearchField } from '../components/SearchField';
-import { SegmentedTabs } from '../components/SegmentedTabs';
 import { DistributorProductCard } from '../components/DistributorProductCard';
 import { WholesalerProductCard } from '../components/WholesalerProductCard';
-import { NoResults, OtherTabHint, ScopedNoResults } from '../components/NoResults';
-import { BrandTile, CategoryCard } from '../components/EntityTiles';
+import { NoResults, ScopedNoResults } from '../components/NoResults';
+import { BrandTile } from '../components/EntityTiles';
 import { useSearch } from '../context/SearchContext';
-import { federatedSearch, productsInScope, didYouMean, hasAnyMatch } from '../search/engine';
-import { personalize, usualSubtitle } from '../search/personalize';
+import { federatedSearch, productsInScope, didYouMean } from '../search/engine';
+import { Product, orderedProductIds } from '../data/catalog';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SearchResults'>;
 
-const TABS = ['Distributors', 'Wholesalers'];
+/** Distributor and wholesaler listings of one SKU share a base id (d_x / w_x). */
+const baseKey = (p: Product) => p.id.replace(/^[dw]_/, '');
+
+/**
+ * Merge both sources into one list, grouped by SKU: distributor listing first,
+ * its wholesaler counterpart directly beneath it. Relevance order is preserved
+ * by each SKU's first appearance.
+ */
+function groupBySku(listings: Product[]): Product[][] {
+  const order: string[] = [];
+  const map = new Map<string, Product[]>();
+  for (const p of listings) {
+    const k = baseKey(p);
+    if (!map.has(k)) { map.set(k, []); order.push(k); }
+    map.get(k)!.push(p);
+  }
+  const rank = (p: Product) => (p.source === 'distributor' ? 0 : 1);
+  return order.map((k) => map.get(k)!.slice().sort((a, b) => rank(a) - rank(b)));
+}
 
 export function SearchResultsScreen({ navigation, route }: Props) {
-  const { persona, addRecent } = useSearch();
+  const { addRecent } = useSearch();
   const [query, setQuery] = useState(route.params.query || '');
   const [scope, setScope] = useState<ScopeParam | undefined>(route.params.scope);
-  const [tab, setTab] = useState(route.params.tab === 'wholesalers' ? 1 : 0);
   /** Set when the retailer rejects the spelling correction and wants their words. */
   const [forceRaw, setForceRaw] = useState(false);
 
   const isScoped = scope && scope.kind !== 'all';
   const hasQuery = query.trim().length > 0;
-  const isDist = tab === 0;
 
   const results = useMemo(
     () => federatedSearch(query, scope as any, !forceRaw),
     [query, scope, forceRaw]
   );
 
-  // Products for the active tab, split by source.
+  // One merged list across both sources, grouped distributor-then-wholesaler.
   const rawProducts = hasQuery ? results.products : productsInScope(scope as any);
-  const tabProducts = useMemo(
-    () => rawProducts.filter((p) => (isDist ? p.source === 'distributor' : p.source === 'wholesaler')),
-    [rawProducts, isDist]
-  );
-
-  const { list, yourUsual, personalizedLabel } = useMemo(
-    () => personalize(tabProducts, persona),
-    [tabProducts, persona]
-  );
-  const usualCount = isDist && persona === 'existing' ? list.filter((p) => yourUsual.has(p.id)).length : 0;
+  const groups = useMemo(() => groupBySku(rawProducts), [rawProducts]);
+  const isOrdered = (g: Product[]) => g.some((p) => orderedProductIds.has(p.id));
+  const orderedGroups = useMemo(() => groups.filter(isOrdered), [groups]);
+  const restGroups = useMemo(() => groups.filter((g) => !isOrdered(g)), [groups]);
+  const empty = groups.length === 0;
 
   const submit = (q: string) => {
     const v = q.trim();
@@ -57,51 +67,28 @@ export function SearchResultsScreen({ navigation, route }: Props) {
   };
   const searchAll = () => setScope({ kind: 'all' });
 
-  /** Any entity tap → the Product List page, with context built from where we came from. */
+  /** A brand tap → the Product List page, across both sources. */
   const openBrand = (brand: string) =>
     navigation.navigate('ProductList', {
       title: brand,
       crumbs: ['Brands', brand],
-      filter: { brand, source: isDist ? 'distributor' : 'wholesaler' },
+      filter: { brand },
     });
-  const openCategory = (category: string) =>
-    navigation.navigate('ProductList', {
-      title: category,
-      crumbs: ['Categories', category],
-      filter: { category, source: isDist ? 'distributor' : 'wholesaler' },
-    });
-  // No brand filter here → no brand in the subheading, so the label always
-  // matches what's listed ("N Products").
-  const openDistributor = (distributor: string) =>
-    navigation.navigate('ProductList', {
-      title: distributor,
-      crumbs: ['Distributors', distributor],
-      filter: { distributor, source: 'distributor' },
-    });
-  const goCategory = (label?: string, id?: string) => { setScope({ kind: 'category', label, id }); setQuery(''); };
-  const goOffer = (label?: string, id?: string) => { setScope({ kind: 'offer', label, id }); setQuery(''); };
 
-  // Federated entity sections belong to the Distributors tab only.
-  const showFederated = isDist && hasQuery && !isScoped;
+  // The federated Brands rail shows above the merged product list.
+  const showFederated = hasQuery && !isScoped;
 
   // ── Edge cases ──
-  // Does the *other* tab have this product? Drives the cross-tab hint vs a true dead end.
-  const anyMatch = useMemo(() => (hasQuery ? hasAnyMatch(query) : { distributor: true, wholesaler: true }), [query, hasQuery]);
-  const suggestion = useMemo(
-    () => (hasQuery && !anyMatch.distributor && !anyMatch.wholesaler ? didYouMean(query) : null),
-    [query, hasQuery, anyMatch]
-  );
-  // Inside a scope, "nothing here" is a different problem from "nothing anywhere":
-  // the fix is to widen the scope, not to switch tabs.
-  const scopedEmpty = hasQuery && !!isScoped && list.length === 0;
-  const tabEmpty = hasQuery && !isScoped && list.length === 0;
-  const otherTabHas = isDist ? anyMatch.wholesaler : anyMatch.distributor;
-  const deadEnd = tabEmpty && !otherTabHas;
+  // Inside a scope, "nothing here" means widen the scope; outside it, it's a
+  // genuine dead end that earns a "did you mean".
+  const scopedEmpty = hasQuery && !!isScoped && empty;
+  const deadEnd = hasQuery && !isScoped && empty;
+  const suggestion = useMemo(() => (deadEnd ? didYouMean(query) : null), [deadEnd, query]);
 
   // Spelling was corrected before searching (mung -> moong): say so, and let
   // the retailer force the original back.
   const correction = results.correction;
-  const showCorrection = hasQuery && correction.changed && !forceRaw && list.length > 0;
+  const showCorrection = hasQuery && correction.changed && !forceRaw && !empty;
 
   return (
     <View style={styles.root}>
@@ -121,8 +108,6 @@ export function SearchResultsScreen({ navigation, route }: Props) {
             />
           </View>
         </View>
-
-        <SegmentedTabs tabs={TABS} active={tab} onChange={setTab} />
       </View>
 
       {/* Scope context chip */}
@@ -143,12 +128,7 @@ export function SearchResultsScreen({ navigation, route }: Props) {
         <ScrollView keyboardShouldPersistTaps="handled">
           <NoResults query={query} suggestion={suggestion} onSearch={submit} />
         </ScrollView>
-      ) : /* ── Edge case B: this tab empty, the other tab stocks it ── */
-      tabEmpty ? (
-        <ScrollView keyboardShouldPersistTaps="handled">
-          <OtherTabHint query={query} toWholesalers={isDist} onSwitch={() => setTab(isDist ? 1 : 0)} />
-        </ScrollView>
-      ) : /* ── Edge case C: nothing inside this scope → offer to widen ── */
+      ) : /* ── Edge case B: nothing inside this scope → offer to widen ── */
       scopedEmpty ? (
         <ScrollView keyboardShouldPersistTaps="handled">
           <ScopedNoResults query={query} scopeLabel={scope?.label} onSearchAll={searchAll} />
@@ -173,11 +153,11 @@ export function SearchResultsScreen({ navigation, route }: Props) {
             </View>
           )}
 
-          {results.broadened && hasQuery && list.length > 0 && (
+          {results.broadened && hasQuery && !empty && (
             <Text style={styles.broadened}>Showing closest matches for “{query}”</Text>
           )}
 
-          {/* ── Federated sections (Distributors tab) ── */}
+          {/* ── Federated section — Brands only ── */}
           {showFederated && results.brands.length > 0 && (
             <Section title="Brands">
               <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.rail}>
@@ -188,66 +168,32 @@ export function SearchResultsScreen({ navigation, route }: Props) {
             </Section>
           )}
 
-          {showFederated && results.categories.length > 0 && (
-            <Section title="Categories">
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.rail}>
-                {results.categories.map((c) => (
-                  <CategoryCard key={c.id} category={c} onPress={() => openCategory(c.name)} />
-                ))}
-              </ScrollView>
-            </Section>
-          )}
-
-          {showFederated && results.offers.length > 0 && (
-            <Section title="Offers">
-              {results.offers.map((o) => (
-                <EntityRow key={o.id} icon="pricetags" iconColor={colors.marginGreen} title={o.name}
-                  sub={`${o.productIds.length} products in this deal`} onPress={() => goOffer(o.name, o.id)} />
-              ))}
-            </Section>
-          )}
-
-          {showFederated && results.distributors.length > 0 && (
-            <Section title="Distributors">
-              {results.distributors.map((dd) => (
-                <EntityRow key={dd.id} icon="storefront" title={dd.name} sub={`Carries ${dd.brands.join(', ')}`} onPress={() => openDistributor(dd.name)} />
-              ))}
-            </Section>
-          )}
-
-          {/* ── Products ── */}
-          {isDist ? (
-            usualCount > 0 ? (
-              <>
-                <ProductsHeader icon="repeat" text={personalizedLabel || 'Your Usual'} tint={colors.primary} />
-                {list.slice(0, usualCount).map((p) => (
-                  <DistributorProductCard key={p.id} product={p} yourUsual usualSub={usualSubtitle(p.id)} />
-                ))}
-                {list.length > usualCount && (
-                  <ProductsHeader icon="search" text={hasQuery ? `More matches for “${query}”` : 'More products'} />
-                )}
-                {list.slice(usualCount).map((p) => <DistributorProductCard key={p.id} product={p} />)}
-              </>
-            ) : (
-              <>
-                <ProductsHeader
-                  icon={persona === 'new' ? 'trending-up' : 'cube-outline'}
-                  text={persona === 'new' ? 'Bestsellers in Your Area' : (isScoped ? scope?.label || 'Products' : 'Products')}
-                  tint={persona === 'new' ? colors.marginGreen : colors.textDark}
-                />
-                {list.map((p) => <DistributorProductCard key={p.id} product={p} />)}
-              </>
-            )
-          ) : (
-            // ── Wholesalers tab: product list only ──
+          {/* ── Merged products: distributor card, then its wholesaler card ── */}
+          {orderedGroups.length > 0 ? (
             <>
-              {list.map((p) => <WholesalerProductCard key={p.id} product={p} />)}
-
+              <ProductsHeader icon="repeat" text="Previously Ordered" tint={colors.primary} />
+              {orderedGroups.map(renderGroup)}
+              {restGroups.length > 0 && <ProductsHeader icon="search" text="More Results" />}
+              {restGroups.map(renderGroup)}
+            </>
+          ) : (
+            <>
+              <ProductsHeader icon="cube-outline" text={isScoped ? scope?.label || 'Products' : 'Products'} />
+              {restGroups.map(renderGroup)}
             </>
           )}
         </ScrollView>
       )}
     </View>
+  );
+}
+
+/** Render a SKU group: distributor card first, its wholesaler counterpart below. */
+function renderGroup(group: Product[]) {
+  return group.map((p) =>
+    p.source === 'distributor'
+      ? <DistributorProductCard key={p.id} product={p} />
+      : <WholesalerProductCard key={p.id} product={p} />
   );
 }
 
@@ -266,20 +212,6 @@ function ProductsHeader({ icon, text, tint }: { icon: string; text: string; tint
       <Ionicons name={icon as any} size={15} color={tint || colors.textDark} />
       <Text style={[styles.prodHeadText, tint ? { color: tint } : null]}>{text}</Text>
     </View>
-  );
-}
-
-function EntityRow({ icon, iconColor, title, sub, onPress }:
-  { icon: string; iconColor?: string; title: string; sub?: string; onPress: () => void }) {
-  return (
-    <Pressable style={styles.entityRow} onPress={onPress}>
-      <View style={styles.entityIcon}><Ionicons name={icon as any} size={17} color={iconColor || colors.primary} /></View>
-      <View style={{ flex: 1 }}>
-        <Text style={styles.entityTitle}>{title}</Text>
-        {!!sub && <Text style={styles.entitySub}>{sub}</Text>}
-      </View>
-      <Ionicons name="chevron-forward" size={17} color={colors.textMuted} />
-    </Pressable>
   );
 }
 
@@ -321,19 +253,6 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5, textTransform: 'uppercase', marginBottom: 8,
   },
   rail: { gap: 8, paddingRight: 4 },
-
-
-  entityRow: {
-    flexDirection: 'row', alignItems: 'center', gap: 12,
-    backgroundColor: colors.white, borderWidth: 1, borderColor: colors.cardBorder,
-    borderRadius: radii.md, paddingVertical: 12, paddingHorizontal: 12, marginBottom: 8,
-  },
-  entityIcon: {
-    width: 34, height: 34, borderRadius: radii.sm, backgroundColor: colors.lightBlue,
-    alignItems: 'center', justifyContent: 'center',
-  },
-  entityTitle: { fontFamily: font.semibold, fontSize: 14, color: colors.textDark },
-  entitySub: { fontFamily: font.regular, fontSize: 11.5, color: colors.subText, marginTop: 2 },
 
   prodHead: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 10, marginTop: 4 },
   prodHeadText: { fontFamily: font.bold, fontSize: 14, color: colors.textDark },

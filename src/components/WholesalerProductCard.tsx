@@ -3,13 +3,12 @@ import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, radii, font } from '../theme/theme';
 import { Product } from '../data/catalog';
-import { ProductImage, CaseLine, VariantPills, PriceBand, ActionsRow, s } from './ProductCardParts';
+import { CardTags, ProductImage, CaseLine, VariantPills, PriceBand, ActionsRow, s } from './ProductCardParts';
 
 /**
  * Wholesaler product card — replicated from the Figma export.
- * name → case → 120px image → variants → seller selector (multiple sellers)
- * → price band → Discounts/Add → "Delivery by Tomorrow".
- * No brand chip and no Free-Delivery line under the margin badge (per the reference).
+ * brand chip + Wholesaler badge → name → case → 120px image → variants →
+ * seller selector (multiple sellers) → price band → Discounts/Add → delivery.
  */
 export function WholesalerProductCard({ product }: { product: Product }) {
   const [variant, setVariant] = useState(0);
@@ -20,6 +19,7 @@ export function WholesalerProductCard({ product }: { product: Product }) {
     <View style={s.card}>
       <View style={s.header}>
         <View style={s.headerLeft}>
+          <CardTags product={product} />
           <Text style={s.name} numberOfLines={2}>{product.name}</Text>
           <CaseLine product={product} />
         </View>

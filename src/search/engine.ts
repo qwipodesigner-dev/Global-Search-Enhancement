@@ -10,7 +10,7 @@
  * never "red chilli" (multi-token queries require full-token coverage first).
  */
 import {
-  products, brands, categories, offers, distributors, synonyms,
+  products, brands, categories, offers, distributors,
   Product, Brand, Category, Offer, Distributor,
 } from '../data/catalog';
 
@@ -58,11 +58,6 @@ function fuzzyInWords(token: string, words: string[]): boolean {
   return words.some((w) => Math.abs(w.length - token.length) <= tol && editDistance(w, token) <= tol);
 }
 
-function expand(token: string): string[] {
-  const syn = synonyms[token];
-  return syn ? [token, ...syn] : [token];
-}
-
 type Scored<T> = { item: T; score: number; matched: number };
 
 /** Whole-word, or a word that STARTS with the token — never mid-word. */
@@ -105,7 +100,7 @@ function scoreProduct(
   // qualify just because "15" matched the pack size "15 Ltr".
   let matchedReal = 0;
   for (const raw of tokens) {
-    const variants = expand(raw);
+    const variants = [raw];
     let best = 0;
     let hit = false;
     for (const t of variants) {
@@ -144,7 +139,7 @@ function scoreText(tokens: string[], phrase: string, text: string, weightExact =
 
   let matched = 0;
   for (const raw of tokens) {
-    const variants = expand(raw);
+    const variants = [raw];
     let hit = false;
     for (const v of variants) {
       if (words.includes(v)) { score += 30; hit = true; break; }  // whole word: "dal" ✓ "dal"
@@ -232,7 +227,6 @@ const VOCAB: Map<string, number> = (() => {
   products.forEach((p) => { add(p.name); add(p.brand); p.keywords.forEach(add); });
   brands.forEach((b) => add(b.name));
   categories.forEach((c) => add(c.name));
-  Object.keys(synonyms).forEach((k) => add(k));
   return m;
 })();
 
@@ -243,10 +237,10 @@ const VOCAB: Map<string, number> = (() => {
  */
 function correctToken(t: string): string {
   if (t.length < 4 || isNumeric(t)) return t;      // too short to correct safely
-  if (VOCAB.has(t) || synonyms[t]) return t;       // already a real word
-  // Flat tolerance of 2. Scaling it up for long words sounds generous but lets
-  // "redlabel" collapse onto "label", which is a worse answer than not guessing.
-  const tol = 2;
+  if (VOCAB.has(t)) return t;                       // already a real word
+  // Short words only earn 1 edit; longer words earn 2. A flat 2 let short
+  // non-English words (chai, sabun, cheeni…) collapse onto unrelated products.
+  const tol = t.length >= 7 ? 2 : 1;
 
   let best: { w: string; d: number; freq: number } | null = null;
   for (const [w, freq] of VOCAB) {
