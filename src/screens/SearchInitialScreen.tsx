@@ -8,13 +8,13 @@ import { DeviceStatusBar } from '../components/DeviceStatusBar';
 import { SearchField } from '../components/SearchField';
 import { useSearch } from '../context/SearchContext';
 import { getSuggestions, Suggestion } from '../search/suggest';
-import { trendingTerms, products, categories } from '../data/catalog';
+import { trendingTerms, categories } from '../data/catalog';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SearchInitial'>;
 
 export function SearchInitialScreen({ navigation, route }: Props) {
   const scope = route.params?.scope;
-  const { recent, addRecent, clearRecent, persona, setPersona } = useSearch();
+  const { recent, addRecent, clearRecent } = useSearch();
   const [query, setQuery] = useState('');
   const [debounced, setDebounced] = useState('');
 
@@ -46,11 +46,8 @@ export function SearchInitialScreen({ navigation, route }: Props) {
   };
 
   const typing = debounced.trim().length >= 2;
-  const bestsellers = useMemo(
-    () => [...products].sort((a, b) => (a.bestsellerRank ?? 99) - (b.bestsellerRank ?? 99)).slice(0, 6),
-    []
-  );
-  const showRecent = persona === 'existing' && recent.length > 0;
+  // An existing retailer has recent searches; a new one has none → trending only.
+  const showRecent = recent.length > 0;
 
   return (
     <View style={styles.root}>
@@ -87,27 +84,15 @@ export function SearchInitialScreen({ navigation, route }: Props) {
         </ScrollView>
       ) : (
         <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingBottom: 24 }}>
-          {/* Persona toggle (demo) */}
-          <View style={styles.personaWrap}>
-            <Text style={styles.personaLabel}>Demo as</Text>
-            <View style={styles.personaToggle}>
-              {(['existing', 'new'] as const).map((p) => (
-                <Pressable key={p} onPress={() => setPersona(p)} style={[styles.personaBtn, persona === p && styles.personaBtnOn]}>
-                  <Text style={[styles.personaText, persona === p && styles.personaTextOn]}>
-                    {p === 'existing' ? 'Existing retailer' : 'New retailer'}
-                  </Text>
-                </Pressable>
-              ))}
-            </View>
-          </View>
-
+          {/* Recent searches — only when the retailer has any; capped at 3 rows.
+              Clearing empties them, so the section then disappears (trending stays). */}
           {showRecent && (
             <View style={styles.section}>
               <View style={styles.sectionHead}>
                 <Text style={styles.sectionTitle}>Recent searches</Text>
                 <Pressable onPress={clearRecent}><Text style={styles.clear}>Clear</Text></Pressable>
               </View>
-              <View style={styles.chipWrap}>
+              <View style={[styles.chipWrap, styles.recentClamp]}>
                 {recent.map((r) => (
                   <Pressable key={r} style={styles.chip} onPress={() => runSearch(r)}>
                     <Ionicons name="time-outline" size={13} color={colors.inkMuted} />
@@ -118,31 +103,18 @@ export function SearchInitialScreen({ navigation, route }: Props) {
             </View>
           )}
 
-          {persona === 'new' ? (
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Bestsellers in Your Area</Text>
-              <Text style={styles.coldStart}>New here — showing what retailers near you order most.</Text>
-              {bestsellers.map((p) => (
-                <Pressable key={p.id} style={styles.bestRow} onPress={() => runSearch(p.name)}>
-                  <View style={[styles.bestDot, { backgroundColor: p.tint }]} />
-                  <Text style={styles.bestName} numberOfLines={1}>{p.name}</Text>
-                  <Ionicons name="chevron-forward" size={16} color={colors.inkFaint} />
+          {/* Trending searches — always shown (the only zero-state for a new retailer). */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Trending searches</Text>
+            <View style={styles.chipWrap}>
+              {trendingTerms.map((t) => (
+                <Pressable key={t} style={[styles.chip, styles.chipTrend]} onPress={() => runSearch(t)}>
+                  <Ionicons name="trending-up" size={13} color={colors.primary} />
+                  <Text style={[styles.chipText, { color: colors.primary }]}>{t}</Text>
                 </Pressable>
               ))}
             </View>
-          ) : (
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Trending searches</Text>
-              <View style={styles.chipWrap}>
-                {trendingTerms.map((t) => (
-                  <Pressable key={t} style={[styles.chip, styles.chipTrend]} onPress={() => runSearch(t)}>
-                    <Ionicons name="trending-up" size={13} color={colors.primary} />
-                    <Text style={[styles.chipText, { color: colors.primary }]}>{t}</Text>
-                  </Pressable>
-                ))}
-              </View>
-            </View>
-          )}
+          </View>
         </ScrollView>
       )}
     </View>
@@ -181,21 +153,14 @@ const styles = StyleSheet.create({
   sugSub: { fontSize: 11.5, color: colors.inkFaint, marginTop: 2 },
   noSug: { padding: spacing.gutter, color: colors.inkFaint, fontSize: 13 },
 
-  personaWrap: { paddingHorizontal: spacing.gutter, paddingTop: 6, paddingBottom: 4 },
-  personaLabel: { fontSize: 11, color: colors.inkFaint, fontWeight: '700', marginBottom: 6, letterSpacing: 0.4, textTransform: 'uppercase' },
-  personaToggle: { flexDirection: 'row', backgroundColor: colors.surfaceChip, borderRadius: radii.md, padding: 3, gap: 3 },
-  personaBtn: { flex: 1, height: 34, borderRadius: radii.sm, alignItems: 'center', justifyContent: 'center' },
-  personaBtnOn: { backgroundColor: colors.surface, ...{ shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 4, shadowOffset: { width: 0, height: 1 }, elevation: 1 } },
-  personaText: { fontSize: 12.5, fontWeight: '700', color: colors.inkMuted },
-  personaTextOn: { color: colors.primary },
-
   section: { paddingHorizontal: spacing.gutter, marginTop: 18 },
   sectionHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   sectionTitle: { fontSize: 14, fontWeight: '800', color: colors.ink, marginBottom: 10 },
   clear: { fontSize: 12.5, fontWeight: '700', color: colors.primary },
-  coldStart: { fontSize: 12, color: colors.inkFaint, marginTop: -4, marginBottom: 10 },
 
   chipWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  // Cap recent searches at three rows (chip ≈ 34 tall, gap 8 → 3 rows ≈ 118).
+  recentClamp: { maxHeight: 118, overflow: 'hidden' },
   chip: {
     flexDirection: 'row', alignItems: 'center', gap: 5,
     backgroundColor: colors.surfaceChip, borderRadius: radii.pill,
@@ -203,11 +168,4 @@ const styles = StyleSheet.create({
   },
   chipTrend: { backgroundColor: colors.primarySoft },
   chipText: { fontSize: 13, fontWeight: '600', color: colors.ink },
-
-  bestRow: {
-    flexDirection: 'row', alignItems: 'center', gap: 10,
-    paddingVertical: 11, borderBottomWidth: 1, borderBottomColor: colors.line,
-  },
-  bestDot: { width: 10, height: 10, borderRadius: 5 },
-  bestName: { flex: 1, fontSize: 13.5, color: colors.ink, fontWeight: '500' },
 });

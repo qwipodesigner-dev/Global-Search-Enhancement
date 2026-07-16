@@ -6,48 +6,58 @@ import { RootStackParamList, ScopeParam } from '../navigation/types';
 import { colors, radii, font, layout } from '../theme/theme';
 import { DeviceStatusBar } from '../components/DeviceStatusBar';
 import { SearchField } from '../components/SearchField';
-import { SegmentedTabs } from '../components/SegmentedTabs';
 import { DistributorProductCard } from '../components/DistributorProductCard';
 import { WholesalerProductCard } from '../components/WholesalerProductCard';
-import { NoResults, OtherTabHint, ScopedNoResults } from '../components/NoResults';
+import { NoResults, ScopedNoResults } from '../components/NoResults';
 import { BrandTile } from '../components/EntityTiles';
 import { useSearch } from '../context/SearchContext';
-import { federatedSearch, productsInScope, didYouMean, hasAnyMatch } from '../search/engine';
-import { personalize } from '../search/personalize';
+import { federatedSearch, productsInScope, didYouMean } from '../search/engine';
+import { Product, orderedProductIds } from '../data/catalog';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SearchResults'>;
 
-const TABS = ['Distributors', 'Wholesalers'];
+/** Distributor and wholesaler listings of one SKU share a base id (d_x / w_x). */
+const baseKey = (p: Product) => p.id.replace(/^[dw]_/, '');
+
+/**
+ * Merge both sources into one list, grouped by SKU: distributor listing first,
+ * its wholesaler counterpart directly beneath it. Relevance order is preserved
+ * by each SKU's first appearance.
+ */
+function groupBySku(listings: Product[]): Product[][] {
+  const order: string[] = [];
+  const map = new Map<string, Product[]>();
+  for (const p of listings) {
+    const k = baseKey(p);
+    if (!map.has(k)) { map.set(k, []); order.push(k); }
+    map.get(k)!.push(p);
+  }
+  const rank = (p: Product) => (p.source === 'distributor' ? 0 : 1);
+  return order.map((k) => map.get(k)!.slice().sort((a, b) => rank(a) - rank(b)));
+}
 
 export function SearchResultsScreen({ navigation, route }: Props) {
-  const { persona, addRecent } = useSearch();
+  const { addRecent } = useSearch();
   const [query, setQuery] = useState(route.params.query || '');
   const [scope, setScope] = useState<ScopeParam | undefined>(route.params.scope);
-  const [tab, setTab] = useState(route.params.tab === 'wholesalers' ? 1 : 0);
   /** Set when the retailer rejects the spelling correction and wants their words. */
   const [forceRaw, setForceRaw] = useState(false);
 
   const isScoped = scope && scope.kind !== 'all';
   const hasQuery = query.trim().length > 0;
-  const isDist = tab === 0;
 
   const results = useMemo(
     () => federatedSearch(query, scope as any, !forceRaw),
     [query, scope, forceRaw]
   );
 
-  // Products for the active tab, split by source.
+  // One merged list across both sources, grouped distributor-then-wholesaler.
   const rawProducts = hasQuery ? results.products : productsInScope(scope as any);
-  const tabProducts = useMemo(
-    () => rawProducts.filter((p) => (isDist ? p.source === 'distributor' : p.source === 'wholesaler')),
-    [rawProducts, isDist]
-  );
-
-  const { list, yourUsual } = useMemo(
-    () => personalize(tabProducts, persona),
-    [tabProducts, persona]
-  );
-  const usualCount = isDist && persona === 'existing' ? list.filter((p) => yourUsual.has(p.id)).length : 0;
+  const groups = useMemo(() => groupBySku(rawProducts), [rawProducts]);
+  const isOrdered = (g: Product[]) => g.some((p) => orderedProductIds.has(p.id));
+  const orderedGroups = useMemo(() => groups.filter(isOrdered), [groups]);
+  const restGroups = useMemo(() => groups.filter((g) => !isOrdered(g)), [groups]);
+  const empty = groups.length === 0;
 
   const submit = (q: string) => {
     const v = q.trim();
@@ -57,35 +67,28 @@ export function SearchResultsScreen({ navigation, route }: Props) {
   };
   const searchAll = () => setScope({ kind: 'all' });
 
-  /** Any entity tap → the Product List page, with context built from where we came from. */
+  /** A brand tap → the Product List page, across both sources. */
   const openBrand = (brand: string) =>
     navigation.navigate('ProductList', {
       title: brand,
       crumbs: ['Brands', brand],
-      filter: { brand, source: isDist ? 'distributor' : 'wholesaler' },
+      filter: { brand },
     });
 
-  // The federated Brands rail belongs to the Distributors tab only.
-  const showFederated = isDist && hasQuery && !isScoped;
+  // The federated Brands rail shows above the merged product list.
+  const showFederated = hasQuery && !isScoped;
 
   // ── Edge cases ──
-  // Does the *other* tab have this product? Drives the cross-tab hint vs a true dead end.
-  const anyMatch = useMemo(() => (hasQuery ? hasAnyMatch(query) : { distributor: true, wholesaler: true }), [query, hasQuery]);
-  const suggestion = useMemo(
-    () => (hasQuery && !anyMatch.distributor && !anyMatch.wholesaler ? didYouMean(query) : null),
-    [query, hasQuery, anyMatch]
-  );
-  // Inside a scope, "nothing here" is a different problem from "nothing anywhere":
-  // the fix is to widen the scope, not to switch tabs.
-  const scopedEmpty = hasQuery && !!isScoped && list.length === 0;
-  const tabEmpty = hasQuery && !isScoped && list.length === 0;
-  const otherTabHas = isDist ? anyMatch.wholesaler : anyMatch.distributor;
-  const deadEnd = tabEmpty && !otherTabHas;
+  // Inside a scope, "nothing here" means widen the scope; outside it, it's a
+  // genuine dead end that earns a "did you mean".
+  const scopedEmpty = hasQuery && !!isScoped && empty;
+  const deadEnd = hasQuery && !isScoped && empty;
+  const suggestion = useMemo(() => (deadEnd ? didYouMean(query) : null), [deadEnd, query]);
 
   // Spelling was corrected before searching (mung -> moong): say so, and let
   // the retailer force the original back.
   const correction = results.correction;
-  const showCorrection = hasQuery && correction.changed && !forceRaw && list.length > 0;
+  const showCorrection = hasQuery && correction.changed && !forceRaw && !empty;
 
   return (
     <View style={styles.root}>
@@ -105,8 +108,6 @@ export function SearchResultsScreen({ navigation, route }: Props) {
             />
           </View>
         </View>
-
-        <SegmentedTabs tabs={TABS} active={tab} onChange={setTab} />
       </View>
 
       {/* Scope context chip */}
@@ -127,12 +128,7 @@ export function SearchResultsScreen({ navigation, route }: Props) {
         <ScrollView keyboardShouldPersistTaps="handled">
           <NoResults query={query} suggestion={suggestion} onSearch={submit} />
         </ScrollView>
-      ) : /* ── Edge case B: this tab empty, the other tab stocks it ── */
-      tabEmpty ? (
-        <ScrollView keyboardShouldPersistTaps="handled">
-          <OtherTabHint query={query} toWholesalers={isDist} onSwitch={() => setTab(isDist ? 1 : 0)} />
-        </ScrollView>
-      ) : /* ── Edge case C: nothing inside this scope → offer to widen ── */
+      ) : /* ── Edge case B: nothing inside this scope → offer to widen ── */
       scopedEmpty ? (
         <ScrollView keyboardShouldPersistTaps="handled">
           <ScopedNoResults query={query} scopeLabel={scope?.label} onSearchAll={searchAll} />
@@ -157,11 +153,11 @@ export function SearchResultsScreen({ navigation, route }: Props) {
             </View>
           )}
 
-          {results.broadened && hasQuery && list.length > 0 && (
+          {results.broadened && hasQuery && !empty && (
             <Text style={styles.broadened}>Showing closest matches for “{query}”</Text>
           )}
 
-          {/* ── Federated section (Distributors tab) — Brands only ── */}
+          {/* ── Federated section — Brands only ── */}
           {showFederated && results.brands.length > 0 && (
             <Section title="Brands">
               <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.rail}>
@@ -172,39 +168,32 @@ export function SearchResultsScreen({ navigation, route }: Props) {
             </Section>
           )}
 
-          {/* ── Products ── */}
-          {isDist ? (
-            usualCount > 0 ? (
-              <>
-                <ProductsHeader icon="repeat" text="Previously Ordered" tint={colors.primary} />
-                {list.slice(0, usualCount).map((p) => (
-                  <DistributorProductCard key={p.id} product={p} />
-                ))}
-                {list.length > usualCount && (
-                  <ProductsHeader icon="search" text="More Results" />
-                )}
-                {list.slice(usualCount).map((p) => <DistributorProductCard key={p.id} product={p} />)}
-              </>
-            ) : (
-              <>
-                <ProductsHeader
-                  icon={persona === 'new' ? 'trending-up' : 'cube-outline'}
-                  text={persona === 'new' ? 'Bestsellers in Your Area' : (isScoped ? scope?.label || 'Products' : 'Products')}
-                  tint={persona === 'new' ? colors.marginGreen : colors.textDark}
-                />
-                {list.map((p) => <DistributorProductCard key={p.id} product={p} />)}
-              </>
-            )
-          ) : (
-            // ── Wholesalers tab: product list only ──
+          {/* ── Merged products: distributor card, then its wholesaler card ── */}
+          {orderedGroups.length > 0 ? (
             <>
-              {list.map((p) => <WholesalerProductCard key={p.id} product={p} />)}
-
+              <ProductsHeader icon="repeat" text="Previously Ordered" tint={colors.primary} />
+              {orderedGroups.map(renderGroup)}
+              {restGroups.length > 0 && <ProductsHeader icon="search" text="More Results" />}
+              {restGroups.map(renderGroup)}
+            </>
+          ) : (
+            <>
+              <ProductsHeader icon="cube-outline" text={isScoped ? scope?.label || 'Products' : 'Products'} />
+              {restGroups.map(renderGroup)}
             </>
           )}
         </ScrollView>
       )}
     </View>
+  );
+}
+
+/** Render a SKU group: distributor card first, its wholesaler counterpart below. */
+function renderGroup(group: Product[]) {
+  return group.map((p) =>
+    p.source === 'distributor'
+      ? <DistributorProductCard key={p.id} product={p} />
+      : <WholesalerProductCard key={p.id} product={p} />
   );
 }
 
