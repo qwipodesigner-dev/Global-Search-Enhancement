@@ -6,6 +6,30 @@ import { Product } from '../data/catalog';
 
 /** Shared pieces of the Distributor / Wholesaler product cards (Figma export). */
 
+/** Deeper Qwipo purple than the #BB77FF brand tint, so white text is legible. */
+const WHOLESALE_PURPLE = '#8B46E6';
+
+/**
+ * Top-of-card tags: the brand chip plus a colour-coded source badge, in the same
+ * position on BOTH cards. Since distributor and wholesaler listings now sit in
+ * one merged list, the badge (blue = Distributor, purple = Wholesaler) tells the
+ * retailer at a glance which is which.
+ */
+export function CardTags({ product }: { product: Product }) {
+  const isDist = product.source === 'distributor';
+  return (
+    <View style={s.tagRow}>
+      <View style={s.brandChip}>
+        <Text style={s.brandChipTxt}>{product.brand}</Text>
+      </View>
+      <View style={[s.sourceBadge, isDist ? s.sourceDist : s.sourceWhol]}>
+        <Ionicons name={isDist ? 'storefront' : 'business'} size={11} color={colors.white} />
+        <Text style={s.sourceTxt}>{isDist ? 'Distributor' : 'Wholesaler'}</Text>
+      </View>
+    </View>
+  );
+}
+
 /** 120x120 image box: bg #F4F4F4, radius 8, shadow 0 1px 3 rgba(0,0,0,0.1). */
 export function ProductImage({ product }: { product: Product }) {
   return (
@@ -115,7 +139,8 @@ export const s = StyleSheet.create({
   header: { flexDirection: 'row', gap: 12, alignItems: 'flex-start' },
   headerLeft: { flex: 1, gap: 4, minWidth: 0 },
 
-  // brand chip (distributor only)
+  // brand chip + source badge row (both cards, above the SKU name)
+  tagRow: { flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' },
   brandChip: {
     alignSelf: 'flex-start',
     backgroundColor: colors.lightBlue,
@@ -123,6 +148,14 @@ export const s = StyleSheet.create({
     borderRadius: radii.md,
   },
   brandChipTxt: { fontFamily: font.semibold, fontSize: 12, color: colors.primary },
+  sourceBadge: {
+    flexDirection: 'row', alignItems: 'center', gap: 4,
+    paddingHorizontal: 8, paddingVertical: 4,
+    borderRadius: radii.md,
+  },
+  sourceDist: { backgroundColor: colors.primary },       // blue = Distributor
+  sourceWhol: { backgroundColor: WHOLESALE_PURPLE },     // purple = Wholesaler
+  sourceTxt: { fontFamily: font.bold, fontSize: 10.5, color: colors.white },
 
   name: { fontFamily: font.semibold, fontSize: 16, lineHeight: 20.6, color: colors.textDark },
 

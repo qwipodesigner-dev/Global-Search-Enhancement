@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { colors, radii, font } from '../theme/theme';
 import { Product } from '../data/catalog';
-import { ProductImage, CaseLine, VariantPills, PriceBand, ActionsRow, s } from './ProductCardParts';
+import { CardTags, ProductImage, CaseLine, VariantPills, PriceBand, ActionsRow, s } from './ProductCardParts';
 
 /**
  * Distributor product card — replicated from the Figma export.
@@ -17,9 +17,7 @@ export function DistributorProductCard({ product }: { product: Product }) {
     <View style={s.card}>
       <View style={s.header}>
         <View style={s.headerLeft}>
-          <View style={s.brandChip}>
-            <Text style={s.brandChipTxt}>{product.brand}</Text>
-          </View>
+          <CardTags product={product} />
           <Text style={s.name} numberOfLines={2}>{product.name}</Text>
           <CaseLine product={product} />
         </View>
