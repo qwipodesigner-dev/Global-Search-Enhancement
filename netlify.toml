@@ -1,0 +1,20 @@
+# Netlify build config for the Qwipo Global Search (Expo web) app.
+# Once this repo is connected to Netlify, every push to `main` rebuilds and
+# redeploys automatically to the same permanent URL.
+
+[build]
+  # Netlify runs this, then publishes the folder Expo emits.
+  command = "npx expo export -p web"
+  publish = "dist"
+
+[build.environment]
+  # Pin the Node version Netlify builds with (local dev uses 24; 22 is a safe LTS).
+  NODE_VERSION = "22"
+
+# Single-page app fallback: this is one React Navigation screen stack with
+# in-memory routing, so every path should serve index.html rather than 404.
+# Netlify still serves real files (JS, images) first; this only catches misses.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
