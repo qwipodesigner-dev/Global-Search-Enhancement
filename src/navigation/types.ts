@@ -32,4 +32,6 @@ export type RootStackParamList = {
   };
   ProductList: ListContext;
   CategoryGrid: { group: 'groceries' | 'fmcg' };
+  /** Authorised Distributors directory; pass sellerId to isolate one seller. */
+  DistributorList: { sellerId?: string } | undefined;
 };

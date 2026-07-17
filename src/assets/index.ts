@@ -66,6 +66,10 @@ export const brandLogos = {
   doubleHorse: require('../../assets/qwipo/brands/double-horse.png'),
   eastern: require('../../assets/qwipo/brands/eastern.png'),
   priyaFoods: require('../../assets/qwipo/brands/priya-foods.png'),
+  priyaGold: require('../../assets/qwipo/brands/priya-gold.png'),
+  goldDrop: require('../../assets/qwipo/brands/gold-drop.png'),
+  parrySugar: require('../../assets/qwipo/brands/parry-sugar.png'),
+  nippo: require('../../assets/qwipo/brands/nippo.png'),
 };
 
 export type BrandKey = keyof typeof brandLogos;
