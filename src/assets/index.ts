@@ -3,11 +3,22 @@
  * (Downscaled to ~3x display size; originals were up to 3508px.)
  */
 
+/** Authorised Distributors home — hero banners. */
 export const banners = [
   require('../../assets/qwipo/banners/hero1.png'),
   require('../../assets/qwipo/banners/hero2.png'),
   require('../../assets/qwipo/banners/hero3.png'),
   require('../../assets/qwipo/banners/hero4.png'),
+];
+
+/**
+ * Wholesalers home — promotional banners.
+ * TODO: only 1 of the 4 Figma exports came through intact (the others exported
+ * as an 88px sliver / 1x1 blanks because they sit clipped inside the carousel).
+ * Drop the remaining three in here once re-exported at 2x.
+ */
+export const wholesalerBanners = [
+  require('../../assets/qwipo/banners/whol-snack.png'),
 ];
 
 export const ui = {

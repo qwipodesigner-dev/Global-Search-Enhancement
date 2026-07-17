@@ -15,7 +15,7 @@ import { BottomNav } from '../components/BottomNav';
 import { NetworkPattern } from '../components/NetworkPattern';
 import { WholesalerHome } from '../components/WholesalerHome';
 import { homeDistributors, homeBrands, brands } from '../data/catalog';
-import { banners, ui } from '../assets';
+import { banners, wholesalerBanners, ui } from '../assets';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
@@ -39,10 +39,16 @@ export function HomeScreen({ navigation }: Props) {
   const [source, setSource] = useState<'distributors' | 'wholesalers'>('distributors');
   const [page, setPage] = useState(0);
 
+  /** Each source has its own hero banners: distributor vs wholesaler promos. */
+  const bannerSet = source === 'wholesalers' ? wholesalerBanners : banners;
+
   const onBannerScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     const i = Math.round(e.nativeEvent.contentOffset.x / BANNER_STEP);
-    if (i !== page) setPage(Math.max(0, Math.min(banners.length - 1, i)));
+    if (i !== page) setPage(Math.max(0, Math.min(bannerSet.length - 1, i)));
   };
+
+  /** Switching source swaps the banner set, so reset the carousel position. */
+  const changeSource = (s: 'distributors' | 'wholesalers') => { setSource(s); setPage(0); };
 
   return (
     <View style={styles.root}>
@@ -82,7 +88,7 @@ export function HomeScreen({ navigation }: Props) {
           <SearchField bare onPressField={() => navigation.navigate('SearchInitial')} />
 
           {/* Frame 39998 — source cards */}
-          <SourceCards active={source} onChange={setSource} />
+          <SourceCards active={source} onChange={changeSource} />
         </View>
       </View>
 
@@ -98,17 +104,19 @@ export function HomeScreen({ navigation }: Props) {
             scrollEventThrottle={16}
             contentContainerStyle={styles.bannerRow}
           >
-            {banners.map((b, i) => (
+            {bannerSet.map((b, i) => (
               <Image key={i} source={b} style={styles.banner} resizeMode="cover" />
             ))}
           </ScrollView>
 
           {/* slider dots: active 8x8 #9A9A9A, rest 4x4 #D3D3D3, gap 2 */}
-          <View style={styles.dots}>
-            {banners.map((_, i) => (
-              <View key={i} style={i === page ? styles.dotOn : styles.dotOff} />
-            ))}
-          </View>
+          {bannerSet.length > 1 && (
+            <View style={styles.dots}>
+              {bannerSet.map((_, i) => (
+                <View key={i} style={i === page ? styles.dotOn : styles.dotOff} />
+              ))}
+            </View>
+          )}
         </View>
 
         {/* ── Body: distributor rails vs wholesaler sections (source toggle) ── */}
