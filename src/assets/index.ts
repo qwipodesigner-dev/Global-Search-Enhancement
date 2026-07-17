@@ -22,6 +22,12 @@ export const ui = {
   tileWholesalers: require('../../assets/qwipo/ui/tile-wholesalers.png'),
 };
 
+/** Home-screen category cards (Groceries / FMCG big tiles). */
+export const homeCards = {
+  groceries: require('../../assets/qwipo/home/groceries-card.png'),
+  fmcg: require('../../assets/qwipo/home/fmcg-card.png'),
+};
+
 export const products = {
   freedomSunflower1L: require('../../assets/qwipo/products/freedom-sunflower-1l.png'),
 };
@@ -45,6 +51,13 @@ export const brandLogos = {
   zindaTilismath: require('../../assets/qwipo/brands/zinda-tilismath.png'),
   dwibhashi: require('../../assets/qwipo/brands/dwibhashi.png'),
   blackRose: require('../../assets/qwipo/brands/black-rose.png'),
+  // Phase-one brand logos (clean single-mark artwork) — replace Nescafe on the home rails.
+  aashirvaad: require('../../assets/qwipo/brands/aashirvaad.png'),
+  tata: require('../../assets/qwipo/brands/tata.png'),
+  himalaya: require('../../assets/qwipo/brands/himalaya.png'),
+  doubleHorse: require('../../assets/qwipo/brands/double-horse.png'),
+  eastern: require('../../assets/qwipo/brands/eastern.png'),
+  priyaFoods: require('../../assets/qwipo/brands/priya-foods.png'),
 };
 
 export type BrandKey = keyof typeof brandLogos;
