@@ -33,6 +33,33 @@ export const wholesaleTopCategories: WholesaleTile[] = [
   { id: 'wtc7', label: 'Cleaning & Household', image: categoryImages.detergentsAndDishwash },
 ];
 
+/**
+ * Category grids reached by tapping Groceries / FMCG on the wholesaler home
+ * (Figma "Groceries" / "FMCG" screens). 180x120 image + label, 2-column grid.
+ */
+export const groceriesCategories: WholesaleTile[] = [
+  { id: 'g1', label: 'Rice & Rice Products', image: categoryImages.riceAndRiceProducts },
+  { id: 'g2', label: 'Dals & Pulses', image: categoryImages.dalsAndPulses },
+  { id: 'g3', label: 'Atta, Flours & Sooji', image: categoryImages.attaFloursAndSooji },
+  { id: 'g4', label: 'Cooking Oils & Ghee', image: categoryImages.oilGhee },
+  { id: 'g5', label: 'Sugar & Spices', image: categoryImages.saltSugarAndJaggery },
+  { id: 'g6', label: 'Pickles & Podis', image: categoryImages.picklesAndChutney },
+  { id: 'g7', label: 'Dry Fruits', image: categoryImages.snacksDryFruitsNuts },
+];
+
+export const fmcgCategories: WholesaleTile[] = [
+  { id: 'f1', label: 'Oats & Noodles', image: categoryImages.pastaSoupAndNoodles },
+  { id: 'f2', label: 'Personal Care', image: categoryImages.beautyHygiene },
+  { id: 'f3', label: 'Pooja Needs', image: categoryImages.poojaNeeds },
+  { id: 'f4', label: 'Ready-To-Cook', image: categoryImages.readyToCookAndEat },
+  { id: 'f5', label: 'Spreads, Sauces & Ketchups', image: categoryImages.saucesSpreadsAndDips },
+  { id: 'f6', label: 'Biscuits, Snacks & Namkeen', image: categoryImages.chocolatesAndBiscuits },
+  { id: 'f7', label: 'Cleaning & Household', image: categoryImages.detergentsAndDishwash },
+  { id: 'f8', label: 'Stationery', image: categoryImages.giftVoucher }, // placeholder — no stationery asset
+  { id: 'f9', label: 'Beverages', image: categoryImages.beverages },
+  { id: 'f10', label: 'Others', image: categoryImages.gourmetWorldFoods },
+];
+
 /** Top brands rail (Frame 7060) — circular brand tiles, real phase-one logos. */
 export const wholesaleTopBrands: WholesaleTile[] = [
   { id: 'wtb1', label: 'Aashirvaad', image: brandLogos.aashirvaad, fit: 'contain' },

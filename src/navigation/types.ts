@@ -31,4 +31,5 @@ export type RootStackParamList = {
     tab?: 'distributors' | 'wholesalers';
   };
   ProductList: ListContext;
+  CategoryGrid: { group: 'groceries' | 'fmcg' };
 };
