@@ -125,7 +125,7 @@ export function HomeScreen({ navigation }: Props) {
         ) : (
         <>
         {/* ── Distributors ── */}
-        <SectionHeader title="Distributors" />
+        <SectionHeader title="Distributors" onSeeAll={() => navigation.navigate('DistributorList')} />
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -208,11 +208,11 @@ export function HomeScreen({ navigation }: Props) {
 }
 
 /** Frame 39994 — space-between, padding 0 16, height 24. */
-function SectionHeader({ title }: { title: string }) {
+function SectionHeader({ title, onSeeAll }: { title: string; onSeeAll?: () => void }) {
   return (
     <View style={styles.sectionHeader}>
       <Text style={styles.sectionTitle}>{title}</Text>
-      <Pressable><Text style={styles.seeAll}>See All</Text></Pressable>
+      <Pressable onPress={onSeeAll}><Text style={styles.seeAll}>See All</Text></Pressable>
     </View>
   );
 }
