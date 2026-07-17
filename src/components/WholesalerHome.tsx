@@ -108,16 +108,17 @@ const s = StyleSheet.create({
   headTitle: { fontFamily: font.medium, fontSize: 14, lineHeight: 24, color: colors.textDark },
   seeAll: { fontFamily: font.medium, fontSize: 12, lineHeight: 24, color: colors.primary },
 
-  // ── Big category cards (180x120), spread edge-to-edge so padding is symmetric ──
-  bigRow: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 12 },
-  bigCol: { width: 180, alignItems: 'center', gap: 10 },
+  // ── Big category cards — the gap between them matches the outer margins
+  //    (16 / 16 / 16), so the two cards read as evenly spaced. ──
+  bigRow: { flexDirection: 'row', paddingHorizontal: 16, gap: 16 },
+  bigCol: { flex: 1, alignItems: 'center', gap: 10 },
   bigCard: {
-    width: 180, height: 120, borderRadius: radii.lg, overflow: 'hidden',
+    width: '100%', height: 120, borderRadius: radii.lg, overflow: 'hidden',
     borderWidth: 1, borderColor: colors.grey, backgroundColor: colors.white,
   },
   bigImg: { width: '100%', height: '100%' },
   bigLabel: {
-    width: 180, textAlign: 'center',
+    width: '100%', textAlign: 'center',
     fontFamily: font.medium, fontSize: 16, lineHeight: 20, color: colors.textDark2,
   },
 
