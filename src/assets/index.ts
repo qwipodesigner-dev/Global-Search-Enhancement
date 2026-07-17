@@ -11,14 +11,12 @@ export const banners = [
   require('../../assets/qwipo/banners/hero4.png'),
 ];
 
-/**
- * Wholesalers home — promotional banners.
- * TODO: only 1 of the 4 Figma exports came through intact (the others exported
- * as an 88px sliver / 1x1 blanks because they sit clipped inside the carousel).
- * Drop the remaining three in here once re-exported at 2x.
- */
+/** Wholesalers home — promotional hero banners. */
 export const wholesalerBanners = [
-  require('../../assets/qwipo/banners/whol-snack.png'),
+  require('../../assets/qwipo/banners/whol1-snack.png'),
+  require('../../assets/qwipo/banners/whol2-rice.png'),
+  require('../../assets/qwipo/banners/whol3-cooking.png'),
+  require('../../assets/qwipo/banners/whol4-personal.png'),
 ];
 
 export const ui = {
