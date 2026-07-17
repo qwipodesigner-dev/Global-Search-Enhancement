@@ -12,20 +12,24 @@ import {
  * shared chrome (top nav, banner, footer) when the source toggle = wholesalers.
  * Reference layout only — tiles are visual, not wired to Global Search.
  */
-export function WholesalerHome() {
+export function WholesalerHome({ onOpenGroup }: { onOpenGroup: (g: 'groceries' | 'fmcg') => void }) {
   return (
     <View style={{ gap: 16, marginTop: 16 }}>
-      {/* ── Frame 7055 — two large category cards ── */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.bigRow}>
+      {/* ── Frame 7055 — two large category cards, full-width (space-between) ── */}
+      <View style={s.bigRow}>
         {wholesaleBigCategories.map((c) => (
-          <Pressable key={c.id} style={s.bigCol}>
+          <Pressable
+            key={c.id}
+            style={s.bigCol}
+            onPress={() => onOpenGroup(c.id === 'wc_groceries' ? 'groceries' : 'fmcg')}
+          >
             <View style={s.bigCard}>
               <Image source={c.image} style={s.bigImg} resizeMode="cover" />
             </View>
             <Text style={s.bigLabel} numberOfLines={1}>{c.label}</Text>
           </Pressable>
         ))}
-      </ScrollView>
+      </View>
 
       {/* ── Frame 7050 — Exclusive offers (no See All) ── */}
       <View style={{ gap: 8 }}>
@@ -104,8 +108,8 @@ const s = StyleSheet.create({
   headTitle: { fontFamily: font.medium, fontSize: 14, lineHeight: 24, color: colors.textDark },
   seeAll: { fontFamily: font.medium, fontSize: 12, lineHeight: 24, color: colors.primary },
 
-  // ── Big category cards (180x120) ──
-  bigRow: { paddingHorizontal: 12, gap: 12 },
+  // ── Big category cards (180x120), spread edge-to-edge so padding is symmetric ──
+  bigRow: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 12 },
   bigCol: { width: 180, alignItems: 'center', gap: 10 },
   bigCard: {
     width: 180, height: 120, borderRadius: radii.lg, overflow: 'hidden',

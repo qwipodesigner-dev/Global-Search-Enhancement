@@ -4,11 +4,10 @@
  */
 
 export const banners = [
-  require('../../assets/qwipo/banners/banner1-marico.png'),
-  require('../../assets/qwipo/banners/banner2-b2b.png'),
-  require('../../assets/qwipo/banners/banner3-distributor-online.png'),
-  require('../../assets/qwipo/banners/banner4-40brands.png'),
-  require('../../assets/qwipo/banners/banner5-tomorrow.png'),
+  require('../../assets/qwipo/banners/hero1.png'),
+  require('../../assets/qwipo/banners/hero2.png'),
+  require('../../assets/qwipo/banners/hero3.png'),
+  require('../../assets/qwipo/banners/hero4.png'),
 ];
 
 export const ui = {

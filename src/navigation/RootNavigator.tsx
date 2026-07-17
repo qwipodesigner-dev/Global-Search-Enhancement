@@ -5,6 +5,7 @@ import { HomeScreen } from '../screens/HomeScreen';
 import { SearchInitialScreen } from '../screens/SearchInitialScreen';
 import { SearchResultsScreen } from '../screens/SearchResultsScreen';
 import { ProductListScreen } from '../screens/ProductListScreen';
+import { CategoryGridScreen } from '../screens/CategoryGridScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -18,6 +19,7 @@ export function RootNavigator() {
       <Stack.Screen name="SearchInitial" component={SearchInitialScreen} />
       <Stack.Screen name="SearchResults" component={SearchResultsScreen} />
       <Stack.Screen name="ProductList" component={ProductListScreen} />
+      <Stack.Screen name="CategoryGrid" component={CategoryGridScreen} />
     </Stack.Navigator>
   );
 }

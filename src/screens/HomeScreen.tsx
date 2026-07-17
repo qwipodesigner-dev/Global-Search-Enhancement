@@ -113,7 +113,7 @@ export function HomeScreen({ navigation }: Props) {
 
         {/* ── Body: distributor rails vs wholesaler sections (source toggle) ── */}
         {source === 'wholesalers' ? (
-          <WholesalerHome />
+          <WholesalerHome onOpenGroup={(g) => navigation.navigate('CategoryGrid', { group: g })} />
         ) : (
         <>
         {/* ── Distributors ── */}
