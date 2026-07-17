@@ -787,10 +787,10 @@ export const seedRecentSearches = ['Fortune Oil', 'Red Label', 'Moong Dal'];
 // ─────────────────────────────────────────────────────────────
 // Home screen rails
 // ─────────────────────────────────────────────────────────────
-export const homeDistributors = [
+export const homeDistributors: { id: string; brand: string; distributor: string; logo: any; bg?: string }[] = [
   { id: 'hd1', brand: 'Freedom Oil', distributor: 'Shri Sai Krishna Traders', logo: brandLogos.freedom },
-  { id: 'hd2', brand: 'Nescafe', distributor: 'Omkar Enterprices', logo: brandLogos.nescafe, bg: '#000000' },
-  { id: 'hd3', brand: 'Nestea', distributor: 'Omkar Enterprices', logo: brandLogos.nescafe, bg: '#000000' },
+  { id: 'hd2', brand: 'Tata', distributor: 'Omkar Enterprices', logo: brandLogos.tata },
+  { id: 'hd3', brand: 'Aashirvaad', distributor: 'Omkar Enterprices', logo: brandLogos.aashirvaad },
   { id: 'hd4', brand: 'Ruchi Gold Oil', distributor: 'Shri Sai Krishna Traders', logo: brandLogos.ruchiGold },
   { id: 'hd5', brand: 'Ajay Care', distributor: 'Sri Sairam Enterprises', logo: brandLogos.ajay },
   { id: 'hd6', brand: 'Mysore Sandal', distributor: 'SR Enterprises', logo: brandLogos.mysoreSandal },
@@ -802,10 +802,10 @@ export const homeDistributors = [
 
 export const homeBrands = [
   { id: 'hb1', label: 'Freedom Oil', logo: brandLogos.freedom },
-  { id: 'hb2', label: 'Nescafe Classic', logo: brandLogos.nescafe, bg: '#000000' },
-  { id: 'hb3', label: 'Nescafe Sunrise', logo: brandLogos.nescafe, bg: '#000000' },
-  { id: 'hb4', label: 'Nescafe Gold', logo: brandLogos.nescafe, bg: '#000000' },
-  { id: 'hb5', label: 'Nestea', logo: brandLogos.nescafe, bg: '#000000' },
+  { id: 'hb2', label: 'Aashirvaad', logo: brandLogos.aashirvaad },
+  { id: 'hb3', label: 'Tata', logo: brandLogos.tata },
+  { id: 'hb4', label: 'Himalaya', logo: brandLogos.himalaya },
+  { id: 'hb5', label: 'Double Horse', logo: brandLogos.doubleHorse },
   { id: 'hb6', label: 'AS Brand', logo: brandLogos.asBrand },
   { id: 'hb7', label: 'GD Hing', logo: brandLogos.gdHing },
   { id: 'hb8', label: 'Madhur Sugar', logo: brandLogos.madhurSugar },
