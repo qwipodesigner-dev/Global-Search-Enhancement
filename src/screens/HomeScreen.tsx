@@ -13,6 +13,7 @@ import { SearchField } from '../components/SearchField';
 import { SourceCards } from '../components/SourceCards';
 import { BottomNav } from '../components/BottomNav';
 import { NetworkPattern } from '../components/NetworkPattern';
+import { WholesalerHome } from '../components/WholesalerHome';
 import { homeDistributors, homeBrands, brands } from '../data/catalog';
 import { banners, ui } from '../assets';
 
@@ -110,6 +111,11 @@ export function HomeScreen({ navigation }: Props) {
           </View>
         </View>
 
+        {/* ── Body: distributor rails vs wholesaler sections (source toggle) ── */}
+        {source === 'wholesalers' ? (
+          <WholesalerHome />
+        ) : (
+        <>
         {/* ── Distributors ── */}
         <SectionHeader title="Distributors" />
         <ScrollView
@@ -176,6 +182,8 @@ export function HomeScreen({ navigation }: Props) {
             </View>
           ))}
         </ScrollView>
+        </>
+        )}
 
         {/* ── Group 34702 — DigiDukaan watermark footer ── */}
         <View style={styles.footer}>
