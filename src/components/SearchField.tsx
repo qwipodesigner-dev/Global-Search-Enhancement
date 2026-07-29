@@ -32,6 +32,15 @@ export function SearchField({
   bare,
 }: Props) {
   const Field = onPressField ? Pressable : View;
+  const inputRef = React.useRef<TextInput>(null);
+  // Clear is only meaningful on the real input, and only once something's typed.
+  const showClear = !onPressField && !!value;
+
+  const clear = () => {
+    onChangeText?.('');
+    inputRef.current?.focus(); // stay in the typing state, ready for the next term
+  };
+
   return (
     <View style={[styles.row, bare && { paddingHorizontal: 0 }]}>
       {onBack && (
@@ -50,6 +59,7 @@ export function SearchField({
           </Text>
         ) : (
           <TextInput
+            ref={inputRef}
             style={styles.input}
             value={value}
             placeholder={placeholder}
@@ -60,6 +70,11 @@ export function SearchField({
             autoFocus={autoFocus}
             returnKeyType="search"
           />
+        )}
+        {showClear && (
+          <Pressable hitSlop={10} onPress={clear} style={styles.clear} accessibilityLabel="Clear search">
+            <Ionicons name="close" size={20} color={colors.textMuted} />
+          </Pressable>
         )}
       </Field>
     </View>
@@ -91,4 +106,6 @@ const styles = StyleSheet.create({
     padding: 0,
   },
   placeholder: { color: colors.textMuted },
+  // Sits at the right edge of the field; icon matches the magnifier's muted tone.
+  clear: { marginLeft: 4, alignItems: 'center', justifyContent: 'center' },
 });

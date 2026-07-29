@@ -21,7 +21,7 @@ export function NoResults({
 }) {
   return (
     <View style={s.wrap}>
-      <EmptyBox size={130} />
+      <EmptyBox />
       <Text style={s.title}>No results for “{query}”</Text>
 
       {suggestion ? (
@@ -62,7 +62,7 @@ export function OtherTabHint({
 }) {
   return (
     <View style={s.wrap}>
-      <EmptyBox size={130} />
+      <EmptyBox />
       <Text style={s.title}>
         No products available with{'\n'}{toWholesalers ? 'distributors' : 'wholesalers'}
       </Text>
@@ -92,7 +92,7 @@ export function ScopedNoResults({
 }) {
   return (
     <View style={s.wrap}>
-      <EmptyBox size={130} />
+      <EmptyBox />
       <Text style={s.title}>No results for “{query}”{'\n'}in {scopeLabel}</Text>
       <Text style={s.sub}>It may still be available elsewhere in the catalogue.</Text>
       <Pressable style={s.btn} onPress={onSearchAll}>
@@ -104,7 +104,7 @@ export function ScopedNoResults({
 }
 
 const s = StyleSheet.create({
-  wrap: { alignItems: 'center', paddingTop: 36, paddingHorizontal: 28, paddingBottom: 40 },
+  wrap: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 28, paddingBottom: 40 },
   title: { fontFamily: font.semibold, fontSize: 16, color: colors.textDark, textAlign: 'center', marginTop: 16 },
   sub: { fontFamily: font.regular, fontSize: 14, color: colors.textMuted, textAlign: 'center', marginTop: 8 },
 

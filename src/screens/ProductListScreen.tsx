@@ -100,7 +100,7 @@ export function ProductListScreen({ navigation, route }: Props) {
           list.map((p) => <ListProductCard key={p.id} product={p} />)
         ) : (
           <View style={styles.empty}>
-            <EmptyBox size={120} />
+            <EmptyBox />
             <Text style={styles.emptyTitle}>No products here yet</Text>
           </View>
         )}
