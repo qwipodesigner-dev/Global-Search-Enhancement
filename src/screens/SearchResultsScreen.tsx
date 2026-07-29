@@ -125,12 +125,12 @@ export function SearchResultsScreen({ navigation, route }: Props) {
 
       {/* ── Edge case A: nothing anywhere → No results + did-you-mean ── */}
       {deadEnd ? (
-        <ScrollView keyboardShouldPersistTaps="handled">
+        <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.emptyScroll}>
           <NoResults query={query} suggestion={suggestion} onSearch={submit} />
         </ScrollView>
       ) : /* ── Edge case B: nothing inside this scope → offer to widen ── */
       scopedEmpty ? (
-        <ScrollView keyboardShouldPersistTaps="handled">
+        <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.emptyScroll}>
           <ScopedNoResults query={query} scopeLabel={scope?.label} onSearchAll={searchAll} />
         </ScrollView>
       ) : (
@@ -226,6 +226,8 @@ const styles = StyleSheet.create({
   },
 
   scroll: { paddingHorizontal: 12, paddingVertical: 12 },
+  /** Lets the empty state centre itself in the body rather than sit at the top. */
+  emptyScroll: { flexGrow: 1 },
 
   scopeRow: { paddingHorizontal: layout.gutter, marginTop: 10 },
   scopeChip: {

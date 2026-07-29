@@ -7,7 +7,7 @@ import { EmptyBox } from './EmptyBox';
 export function EmptyState({ query, onSearchWholesaler }: { query: string; onSearchWholesaler: () => void }) {
   return (
     <View style={styles.wrap}>
-      <EmptyBox size={150} />
+      <EmptyBox />
       <Text style={styles.title}>No products available with{'\n'}distributors</Text>
       <Text style={styles.sub}>Please search in “{query}” from Wholesalers?</Text>
       <Pressable style={styles.btn} onPress={onSearchWholesaler}>
