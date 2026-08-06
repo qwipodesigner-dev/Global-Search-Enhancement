@@ -7,6 +7,7 @@ import { colors, radii, font, layout } from '../theme/theme';
 import { DeviceStatusBar } from '../components/DeviceStatusBar';
 import { ListProductCard } from '../components/ListProductCard';
 import { EmptyBox } from '../components/EmptyBox';
+import { CartBar } from '../components/CartBar';
 import { products, DELIVERY_OPTIONS } from '../data/catalog';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ProductList'>;
@@ -53,7 +54,7 @@ export function ProductListScreen({ navigation, route }: Props) {
             </View>
 
             <View style={styles.navActions}>
-              <Pressable style={styles.iconBtn}>
+              <Pressable style={styles.iconBtn} onPress={() => navigation.navigate('SearchInitial')}>
                 <Ionicons name="search" size={22} color={colors.textDark} />
               </Pressable>
               <Pressable style={styles.iconBtn}>
@@ -106,31 +107,8 @@ export function ProductListScreen({ navigation, route }: Props) {
         )}
       </ScrollView>
 
-      {/* ── Cart CTA ── */}
-      <View style={styles.cartBar}>
-        <View style={styles.cartRow}>
-          <View style={{ gap: 8 }}>
-            <Text style={styles.cartLabel}>Total Cart Value:</Text>
-            <View style={styles.cartValueRow}>
-              <Text style={styles.cartValue}>₹1,245.45</Text>
-              <View style={styles.feeRow}>
-                <Ionicons name="cube-outline" size={14} color={colors.marginGreen} />
-                <Text style={styles.feeText}>+ ₹12 Fees</Text>
-              </View>
-            </View>
-          </View>
-
-          <Pressable style={styles.cartBtn}>
-            <Ionicons name="cart" size={20} color={colors.white} />
-            <Text style={styles.cartBtnText}>Cart</Text>
-          </Pressable>
-        </View>
-      </View>
-
-      {/* Home indicator */}
-      <View style={styles.indicatorBar}>
-        <View style={styles.indicator} />
-      </View>
+      {/* ── Cart CTA + home indicator ── */}
+      <CartBar />
     </View>
   );
 }
@@ -201,40 +179,4 @@ const styles = StyleSheet.create({
 
   empty: { alignItems: 'center', paddingTop: 60 },
   emptyTitle: { fontFamily: font.semibold, fontSize: 15, color: colors.textDark, marginTop: 14 },
-
-  // ── Cart CTA: 72 tall, radius 16 16 0 0, shadow 0 -2px 4 ──
-  cartBar: {
-    height: 72,
-    backgroundColor: colors.white,
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    padding: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
-    elevation: 8,
-  },
-  cartRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', flex: 1 },
-  cartLabel: { fontFamily: font.regular, fontSize: 12, lineHeight: 16, color: colors.textMuted },
-  cartValueRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  cartValue: { fontFamily: font.regular, fontSize: 20, lineHeight: 20, color: colors.textDark },
-  feeRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  feeText: { fontFamily: font.medium, fontSize: 10, lineHeight: 16, color: colors.marginGreen },
-  cartBtn: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 12,
-    height: 48, paddingHorizontal: 12,
-    backgroundColor: colors.primary, borderRadius: radii.lg,
-  },
-  cartBtnText: { fontFamily: font.regular, fontSize: 20, lineHeight: 24, color: colors.white },
-
-  indicatorBar: {
-    height: layout.homeIndicatorHeight,
-    backgroundColor: colors.white,
-    borderTopWidth: 0.667,
-    borderTopColor: colors.grey,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  indicator: { width: 64, height: 4, borderRadius: 6, backgroundColor: colors.grey },
 });
