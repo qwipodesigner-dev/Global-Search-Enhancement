@@ -11,6 +11,7 @@ import { DeviceStatusBar } from '../components/DeviceStatusBar';
 import { QwipoLogo } from '../components/Logo';
 import { SearchField } from '../components/SearchField';
 import { SourceCards } from '../components/SourceCards';
+import { useLocations } from '../context/LocationContext';
 import { BottomNav } from '../components/BottomNav';
 import { NetworkPattern } from '../components/NetworkPattern';
 import { WholesalerHome } from '../components/WholesalerHome';
@@ -38,6 +39,19 @@ function brandNameFor(label: string): string {
 export function HomeScreen({ navigation }: Props) {
   const [source, setSource] = useState<'distributors' | 'wholesalers'>('distributors');
   const [page, setPage] = useState(0);
+  const { active } = useLocations();
+
+  // Serviceability at the delivery location decides which source cards are
+  // live; a source with no coverage is greyed with a "Coming Soon" chip.
+  const disabledSources = {
+    distributors: !active.distributors,
+    wholesalers: !active.wholesalers,
+  };
+  // If the location can't serve the current source, fall back to the other.
+  React.useEffect(() => {
+    if (source === 'distributors' && !active.distributors) setSource('wholesalers');
+    if (source === 'wholesalers' && !active.wholesalers) setSource('distributors');
+  }, [active, source]);
 
   /** Each source has its own hero banners: distributor vs wholesaler promos. */
   const bannerSet = source === 'wholesalers' ? wholesalerBanners : banners;
@@ -67,28 +81,28 @@ export function HomeScreen({ navigation }: Props) {
             </View>
 
             <View style={styles.iconRow}>
-              <Pressable style={styles.iconBtn}>
+              <Pressable style={styles.iconBtn} onPress={() => navigation.navigate('Notifications')}>
                 <Ionicons name="notifications-outline" size={24} color={colors.textDark} />
               </Pressable>
-              <Pressable style={styles.iconBtn}>
+              <Pressable style={styles.iconBtn} onPress={() => navigation.navigate('Profile')}>
                 <Ionicons name="person-outline" size={24} color={colors.textDark} />
               </Pressable>
             </View>
           </View>
 
-          {/* Frame 117 — location pill */}
-          <View style={styles.locationPill}>
+          {/* Frame 117 — location pill; opens the saved-locations screen */}
+          <Pressable style={styles.locationPill} onPress={() => navigation.navigate('YourLocation')}>
             <Ionicons name="location-sharp" size={12} color={colors.primary} />
             <Text style={styles.deliverTo}>Deliver to</Text>
-            <Text style={styles.address} numberOfLines={1}>Lit box, Rai Durg, Hitech City</Text>
+            <Text style={styles.address} numberOfLines={1}>{active.label}</Text>
             <Ionicons name="chevron-down" size={16} color={colors.primary} />
-          </View>
+          </Pressable>
 
           {/* Search bar */}
           <SearchField bare onPressField={() => navigation.navigate('SearchInitial')} />
 
           {/* Frame 39998 — source cards */}
-          <SourceCards active={source} onChange={changeSource} />
+          <SourceCards active={source} onChange={changeSource} disabled={disabledSources} />
         </View>
       </View>
 

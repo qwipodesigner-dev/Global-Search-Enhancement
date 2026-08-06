@@ -32,7 +32,7 @@ export function CategoryGridScreen({ navigation, route }: Props) {
             <Ionicons name="chevron-back" size={22} color={colors.textDark} />
           </Pressable>
           <Text style={styles.heading} numberOfLines={1}>{title}</Text>
-          <Pressable style={styles.iconBtn}>
+          <Pressable style={styles.iconBtn} onPress={() => navigation.navigate('SearchInitial')}>
             <Ionicons name="search" size={22} color={colors.textDark} />
           </Pressable>
         </View>

@@ -40,4 +40,20 @@ export type RootStackParamList = {
   Cart: undefined;
   /** One seller's cart lines with steppers + delete. */
   ViewItems: { sellerId: string };
+  /** Saved delivery locations + apply. */
+  YourLocation: undefined;
+  /** New-address form; submits for backend approval. */
+  AddLocation: undefined;
+  /** Account menu: orders, payments, credit partners, notifications. */
+  Profile: undefined;
+  /** Retailer's shop profile (Figma "My Details"). */
+  BusinessDetails: undefined;
+  /** Promo pushes; from the Home bell or the Profile menu. */
+  Notifications: undefined;
+  /** Empty state — app is cash-on-delivery only for now. */
+  Payments: undefined;
+  /** Empty state — credit options not live yet. */
+  CreditPartners: undefined;
+  /** Support info + business advisor. */
+  ContactUs: undefined;
 };

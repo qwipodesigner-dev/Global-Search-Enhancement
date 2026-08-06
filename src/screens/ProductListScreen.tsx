@@ -54,7 +54,7 @@ export function ProductListScreen({ navigation, route }: Props) {
             </View>
 
             <View style={styles.navActions}>
-              <Pressable style={styles.iconBtn}>
+              <Pressable style={styles.iconBtn} onPress={() => navigation.navigate('SearchInitial')}>
                 <Ionicons name="search" size={22} color={colors.textDark} />
               </Pressable>
               <Pressable style={styles.iconBtn}>

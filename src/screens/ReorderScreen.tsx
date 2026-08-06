@@ -50,7 +50,7 @@ export function ReorderScreen({ navigation }: Props) {
           <View style={styles.headingCol}>
             <Text style={styles.heading} numberOfLines={1}>Reorder</Text>
           </View>
-          <Pressable style={styles.iconBtn}>
+          <Pressable style={styles.iconBtn} onPress={() => navigation.navigate('SearchInitial')}>
             <Ionicons name="search" size={22} color={colors.textDark} />
           </Pressable>
         </View>
