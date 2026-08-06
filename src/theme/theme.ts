@@ -89,6 +89,7 @@ export const font = {
   bold: 'Inter_700Bold',
   extrabold: 'Inter_800ExtraBold',
   raleway: 'Raleway_400Regular',
+  ralewaySemibold: 'Raleway_600SemiBold',
 };
 
 export const typography = {

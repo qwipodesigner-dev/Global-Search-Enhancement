@@ -11,10 +11,11 @@ import {
   Inter_700Bold,
   Inter_800ExtraBold,
 } from '@expo-google-fonts/inter';
-import { Raleway_400Regular } from '@expo-google-fonts/raleway';
+import { Raleway_400Regular, Raleway_600SemiBold } from '@expo-google-fonts/raleway';
 import { PhoneFrame } from './src/components/PhoneFrame';
 import { RootNavigator } from './src/navigation/RootNavigator';
 import { SearchProvider } from './src/context/SearchContext';
+import { CartProvider } from './src/context/CartContext';
 import { colors } from './src/theme/theme';
 
 // Remove the browser's default focus ring on inputs so the web preview
@@ -34,6 +35,7 @@ export default function App() {
     Inter_700Bold,
     Inter_800ExtraBold,
     Raleway_400Regular,
+    Raleway_600SemiBold,
   });
 
   if (!fontsLoaded) {
@@ -47,12 +49,14 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <SearchProvider>
+        <CartProvider>
         <PhoneFrame>
           <NavigationContainer>
             <RootNavigator />
           </NavigationContainer>
           <StatusBar style="dark" />
         </PhoneFrame>
+        </CartProvider>
       </SearchProvider>
     </SafeAreaProvider>
   );

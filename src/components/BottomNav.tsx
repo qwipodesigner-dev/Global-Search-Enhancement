@@ -1,6 +1,9 @@
 import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation/types';
 import { colors, font, layout } from '../theme/theme';
 
 const ITEMS: { key: string; label: string; icon: keyof typeof Ionicons.glyphMap }[] = [
@@ -15,6 +18,13 @@ const ITEMS: { key: string; label: string; icon: keyof typeof Ionicons.glyphMap 
  * Followed by the 14px home indicator ("Bottom Nav Bar").
  */
 export function BottomNav({ active = 'home' }: { active?: string }) {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const go = (key: string) => {
+    if (key === active) return;
+    if (key === 'home') navigation.popToTop();
+    if (key === 'reorder') navigation.navigate('Reorder');
+    if (key === 'cart') navigation.navigate('Cart');
+  };
   return (
     <View>
       <View style={styles.bar}>
@@ -24,7 +34,7 @@ export function BottomNav({ active = 'home' }: { active?: string }) {
           return (
             <React.Fragment key={it.key}>
               {i > 0 && <View style={styles.divider} />}
-              <Pressable style={styles.item}>
+              <Pressable style={styles.item} onPress={() => go(it.key)}>
                 <Ionicons name={it.icon} size={24} color={color} />
                 <Text style={[styles.label, { color, fontFamily: on ? font.medium : font.regular }]}>
                   {it.label}

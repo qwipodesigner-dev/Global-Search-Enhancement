@@ -106,6 +106,46 @@ export function PriceBand({ product, showFreeDelivery }: { product: Product; sho
   );
 }
 
+/** Seller selector — the competing wholesaler offers (₹ price / Seller n / Free Delivery). */
+export function SellerSelector({
+  sellers, selected, onSelect,
+}: { sellers: NonNullable<Product['sellers']>; selected: number; onSelect: (i: number) => void }) {
+  return (
+    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.sellerRow}>
+      {sellers.map((sl, i) => {
+        const on = i === selected;
+        const fg = on ? colors.white : colors.textDark2;
+        return (
+          <Pressable key={i} onPress={() => onSelect(i)} style={[s.sellerBox, on ? s.sellerOn : s.sellerOff]}>
+            <Text style={[s.sellerPrice, { color: fg, fontFamily: on ? font.bold : font.medium }]}>
+              ₹ {sl.price}
+            </Text>
+            <Text style={[s.sellerName, { color: fg, fontFamily: on ? font.semibold : font.regular }]}>
+              {sl.name}
+            </Text>
+            {sl.freeDelivery && (
+              <View style={s.sellerFree}>
+                <Ionicons name="cube-outline" size={12} color={fg} />
+                <Text style={[s.sellerFreeTxt, { color: fg }]}>Free Delivery</Text>
+              </View>
+            )}
+          </Pressable>
+        );
+      })}
+    </ScrollView>
+  );
+}
+
+/** "Delivery by Tomorrow" footer line. */
+export function DeliveryByLine({ text }: { text?: string }) {
+  return (
+    <View style={s.deliveryRow}>
+      <Ionicons name="cube-outline" size={16} color={colors.primary} />
+      <Text style={s.deliveryTxt}>{text || 'Delivery by Tomorrow'}</Text>
+    </View>
+  );
+}
+
 /** Discounts (green) + Add (blue) row. */
 export function ActionsRow() {
   return (
@@ -204,6 +244,18 @@ export const s = StyleSheet.create({
   priceRow: { flexDirection: 'row', alignItems: 'flex-end' },
   price: { fontFamily: font.semibold, fontSize: 18, letterSpacing: -0.48, color: colors.textDark },
   perPc: { fontFamily: font.medium, fontSize: 12, color: colors.textDark },
+
+  sellerRow: { gap: 8, alignItems: 'flex-start' },
+  sellerBox: { gap: 8, paddingHorizontal: 10, paddingVertical: 8, borderRadius: radii.sm },
+  sellerOn: { backgroundColor: colors.primary },
+  sellerOff: { backgroundColor: colors.white, borderWidth: 1, borderColor: colors.grey },
+  sellerPrice: { fontSize: 12 },
+  sellerName: { fontSize: 12 },
+  sellerFree: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  sellerFreeTxt: { fontFamily: font.regular, fontSize: 10 },
+
+  deliveryRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  deliveryTxt: { fontFamily: font.medium, fontSize: 12, color: colors.textDark2 },
 
   actions: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   discountBtn: {

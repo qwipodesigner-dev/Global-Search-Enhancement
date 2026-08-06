@@ -34,4 +34,10 @@ export type RootStackParamList = {
   CategoryGrid: { group: 'groceries' | 'fmcg' };
   /** Authorised Distributors directory; pass sellerId to isolate one seller. */
   DistributorList: { sellerId?: string } | undefined;
+  /** Previously-ordered items, split Wholesalers / Distributors. */
+  Reorder: undefined;
+  /** Cart Summary — seller-level combined carts. */
+  Cart: undefined;
+  /** One seller's cart lines with steppers + delete. */
+  ViewItems: { sellerId: string };
 };
