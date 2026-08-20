@@ -1,15 +1,16 @@
 import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
 import { colors, font, layout } from '../theme/theme';
 
-const ITEMS: { key: string; label: string; icon: keyof typeof Ionicons.glyphMap }[] = [
+const ITEMS: { key: string; label: string; icon: string }[] = [
   { key: 'home', label: 'Home', icon: 'home' },
   { key: 'reorder', label: 'Reorder', icon: 'repeat' },
-  { key: 'contact', label: 'Contact Us', icon: 'headset-outline' },
+  // MaterialIcons' support-agent: a customer-care executive wearing a headset
+  { key: 'contact', label: 'Contact Us', icon: 'support-agent' },
   { key: 'cart', label: 'Cart', icon: 'cart-outline' },
 ];
 
@@ -37,7 +38,11 @@ export function BottomNav({ active = 'home' }: { active?: string }) {
             <React.Fragment key={it.key}>
               {i > 0 && <View style={styles.divider} />}
               <Pressable style={styles.item} onPress={() => go(it.key)}>
-                <Ionicons name={it.icon} size={24} color={color} />
+                {it.key === 'contact' ? (
+                  <MaterialIcons name="support-agent" size={24} color={color} />
+                ) : (
+                  <Ionicons name={it.icon as keyof typeof Ionicons.glyphMap} size={24} color={color} />
+                )}
                 <Text style={[styles.label, { color, fontFamily: on ? font.medium : font.regular }]}>
                   {it.label}
                 </Text>
