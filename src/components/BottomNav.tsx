@@ -9,6 +9,7 @@ import { colors, font, layout } from '../theme/theme';
 const ITEMS: { key: string; label: string; icon: keyof typeof Ionicons.glyphMap }[] = [
   { key: 'home', label: 'Home', icon: 'home' },
   { key: 'reorder', label: 'Reorder', icon: 'repeat' },
+  { key: 'contact', label: 'Contact Us', icon: 'headset-outline' },
   { key: 'cart', label: 'Cart', icon: 'cart-outline' },
 ];
 
@@ -23,6 +24,7 @@ export function BottomNav({ active = 'home' }: { active?: string }) {
     if (key === active) return;
     if (key === 'home') navigation.popToTop();
     if (key === 'reorder') navigation.navigate('Reorder');
+    if (key === 'contact') navigation.navigate('ContactUs');
     if (key === 'cart') navigation.navigate('Cart');
   };
   return (
@@ -59,7 +61,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 40,
+    paddingHorizontal: 24,
     paddingVertical: 12,
     backgroundColor: colors.white,
     ...{
