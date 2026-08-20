@@ -12,15 +12,16 @@ type Props = NativeStackScreenProps<RootStackParamList, 'DistributorList'>;
 
 /**
  * Authorised Distributors directory (Figma "All list view" / "Isolated view").
- * Reached from "See All" beside Distributors on the home screen; tapping a
- * seller card opens the same screen isolated to that seller. In the isolated
- * view the MOV reads "MOV:" in primary blue rather than a muted "Seller MOV:".
+ * Reached from "See All" (full list) or a home tile (isolated to one seller);
+ * tapping a seller card opens that seller's hub (brands + categories).
  */
 export function DistributorListScreen({ navigation, route }: Props) {
   const focused = route.params?.sellerId ? sellerById(route.params.sellerId) : undefined;
   const isolated = !!focused;
   const list: Seller[] = focused ? [focused] : sellers;
-  const heading = focused ? focused.name : 'Authorised Distributors';
+  // The nav heading stays "Authorised Distributors" even when isolated —
+  // the seller's name is already on the card itself.
+  const heading = 'Authorised Distributors';
 
   return (
     <View style={styles.root}>
@@ -45,7 +46,7 @@ export function DistributorListScreen({ navigation, route }: Props) {
             key={s.id}
             seller={s}
             isolated={isolated}
-            onPress={isolated ? undefined : () => navigation.push('DistributorList', { sellerId: s.id })}
+            onPress={() => navigation.navigate('SellerHub', { sellerId: s.id })}
           />
         ))}
       </ScrollView>

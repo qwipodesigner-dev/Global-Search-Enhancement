@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, Text, Pressable, StyleSheet, Animated, Easing } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, radii, font } from '../theme/theme';
 
@@ -18,14 +18,38 @@ export function BottomSheet({
   onClose: () => void;
   children: React.ReactNode;
 }) {
+  // 0 -> 1 drives both the slide-up and the backdrop fade.
+  const slide = useRef(new Animated.Value(0)).current;
+  const [sheetH, setSheetH] = useState(600);
+
+  useEffect(() => {
+    if (visible) {
+      slide.setValue(0);
+      Animated.timing(slide, {
+        toValue: 1,
+        duration: 260,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [visible, slide]);
+
   if (!visible) return null;
+
+  const translateY = slide.interpolate({ inputRange: [0, 1], outputRange: [sheetH, 0] });
+
   return (
     // Above everything on the screen — including the top nav (zIndex 10)
     <View style={[StyleSheet.absoluteFill, styles.layer]}>
       {/* Backdrop dims the WHOLE screen, so the sheet's rounded corners
           reveal the dimmed page rather than a white gap. */}
-      <Pressable style={[StyleSheet.absoluteFill, styles.overlay]} onPress={onClose} />
-      <View style={styles.sheet}>
+      <Animated.View style={[StyleSheet.absoluteFill, styles.overlay, { opacity: slide }]}>
+        <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
+      </Animated.View>
+      <Animated.View
+        style={[styles.sheet, { transform: [{ translateY }] }]}
+        onLayout={(e) => setSheetH(Math.max(1, Math.round(e.nativeEvent.layout.height)))}
+      >
         {/* ── Pop Up Header ── */}
         <View style={styles.header}>
           <View style={styles.handle} />
@@ -46,7 +70,7 @@ export function BottomSheet({
         <View style={styles.indicatorBar}>
           <View style={styles.indicator} />
         </View>
-      </View>
+      </Animated.View>
     </View>
   );
 }

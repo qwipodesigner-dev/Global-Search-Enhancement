@@ -78,6 +78,17 @@ const Q_ML = ['100 ml', '200 ml', '340 ml', '650 ml'];
 /** Which distributor carries which brand. Every brand is mapped, so no single
  *  distributor silently absorbs the unmapped remainder. */
 const DISTRIBUTORS_BY_BRAND: Record<string, string> = {
+  // Sri Sarda Enterprises — Priya Oil Mills lines
+  'Gold Drop': 'Sri Sarda Enterprises',
+  'Priya Gold': 'Sri Sarda Enterprises',
+  // SR Enterprises — Andhra Agro lines
+  'Parry Sugar': 'SR Enterprises',
+  'Priya Foods': 'SR Enterprises',
+  Nippo: 'Sri Sairam Enterprises',
+  Eastern: 'Mahedeva Enterprises',
+  'Double Horse': 'Omkar Enterprices',
+  Himalaya: 'Omkar Enterprices',
+
   // Shri Sai Krishna Traders — oils & staples
   Fortune: 'Shri Sai Krishna Traders',
   Freedom: 'Shri Sai Krishna Traders',
@@ -109,9 +120,9 @@ const DISTRIBUTORS_BY_BRAND: Record<string, string> = {
   Vim: 'Sri Sairam Enterprises',
 
   // SR Enterprises — ayurvedic & spreads
-  'Mysore Sandal': 'SR Enterprises',
+  'Mysore Sandal': 'Shri Sai Krishna Traders',
   Vicco: 'SR Enterprises',
-  'Zinda Tilismath': 'SR Enterprises',
+  'Zinda Tilismath': 'Mahedeva Enterprises',
   Dabur: 'SR Enterprises',
   Kissan: 'SR Enterprises',
 
@@ -120,11 +131,11 @@ const DISTRIBUTORS_BY_BRAND: Record<string, string> = {
   'Value Choice': 'Venkateswara Agencies',
   'GD Hing': 'Venkateswara Agencies',
   'AS Brand': 'Venkateswara Agencies',
-  MTR: 'Venkateswara Agencies',
+  MTR: 'Mahedeva Enterprises',
   Everest: 'Venkateswara Agencies',
   Priya: 'Venkateswara Agencies',
   Madhur: 'Venkateswara Agencies',
-  GRB: 'Venkateswara Agencies',
+  GRB: 'Sri Sairam Enterprises',
   Tata: 'Venkateswara Agencies',
   'Shreya Gold': 'Venkateswara Agencies',
   'Tata Sampann': 'Venkateswara Agencies',
@@ -592,6 +603,48 @@ const BASE: Base[] = [
       ['1 Kg Pack', '158', '142'],
     ]),
 
+  // ── Seller-hub brands (mock SKUs so every distributor's brand lists) ──
+  ...line('oil_golddrop', 'Gold Drop', 'Refined Sunflower Oil', 'Oil & Ghee', 'Groceries',
+    [...K_OIL, 'gold drop', 'sunflower'], '#E7C11A', 42, [
+      ['1 Ltr Packet X 16 Nos', '210', '172'],
+      ['5 Ltr Jar', '1,050', '870'],
+    ]),
+  ...line('oil_priyagold', 'Priya Gold', 'Filtered Groundnut Oil', 'Oil & Ghee', 'Groceries',
+    [...K_OIL, 'priya gold', 'groundnut'], '#D64545', 43, [
+      ['1 Ltr Packet X 12 Nos', '245', '206'],
+      ['15 Ltr Tin', '3,450', '2,980'],
+    ]),
+  ...line('sugar_parry', 'Parry Sugar', 'Refined White Sugar', 'Salt, Sugar and Jaggery', 'Groceries',
+    ['sugar', 'white sugar', 'parry'], '#EDEDED', 44, [
+      ['1 Kg Pack', '52', '44'],
+      ['25 Kg Bag', '1,240', '1,065'],
+    ]),
+  ...line('masala_eastern', 'Eastern', 'Sambar Powder', 'Masala & Seasoning', 'Groceries',
+    ['masala', 'sambar', 'powder', 'eastern'], '#C0392B', 45, [
+      ['100 g Pack X 12 Nos', '540', '456'],
+      ['500 g Pack', '210', '178'],
+    ]),
+  ...line('pickle_priyafoods', 'Priya Foods', 'Mango Avakaya Pickle', 'Pickles and Chutney', 'Groceries',
+    ['pickle', 'avakaya', 'mango', 'priya'], '#C0392B', 46, [
+      ['300 g Jar X 12 Nos', '1,500', '1,290'],
+      ['1 Kg Jar', '410', '352'],
+    ]),
+  ...line('dal_doublehorse', 'Double Horse', 'Urad Gota Whole', 'Dals and Pulses', 'Groceries',
+    ['dal', 'urad', 'urad dal', 'double horse'], '#E8E4D8', 48, [
+      ['1 Kg Pack', '190', '162'],
+      ['30 Kg Bag', '5,400', '4,690'],
+    ]),
+  ...line('face_himalaya', 'Himalaya', 'Neem Face Wash', 'Beauty & Hygiene', 'Personal Care',
+    ['face wash', 'neem', 'himalaya', 'skin care'], '#3E7C3A', 49, [
+      ['100 ml Tube X 12 Nos', '1,980', '1,690'],
+      ['200 ml Tube', '320', '274'],
+    ]),
+  ...line('battery_nippo', 'Nippo', 'Gold AA Battery', 'Pooja Needs', 'Household',
+    ['battery', 'cell', 'nippo', 'aa'], '#E0B04A', 47, [
+      ['10 Pc Strip X 12 Nos', '1,800', '1,540'],
+      ['4 Pc Pack', '60', '52'],
+    ]),
+
   // ══ EDGE CASE: distributor-only (a regional SKU no wholesaler lists) ══
   // Keywords are deliberately unique to this line — if any other SKU matched
   // "jowar"/"millet", the Wholesalers tab would find something and the
@@ -739,6 +792,14 @@ export const brands: Brand[] = [
   { id: 'b_sneha', name: 'Sneha', category: 'Oil & Ghee', color: '#FBEE2F', logo: brandLogos.sneha },
   { id: 'b_dwibhashi', name: 'Dwibhashi', category: 'Ayurvedic', color: '#7A9A2E', logo: brandLogos.dwibhashi },
   { id: 'b_blackrose', name: 'Black Rose', category: 'Beauty & Hygiene', color: '#1A1A1A', logo: brandLogos.blackRose },
+  { id: 'b_golddrop', name: 'Gold Drop', category: 'Oil & Ghee', color: '#E7C11A', logo: brandLogos.goldDrop },
+  { id: 'b_priyagold', name: 'Priya Gold', category: 'Oil & Ghee', color: '#D64545', logo: brandLogos.priyaGold },
+  { id: 'b_parry', name: 'Parry Sugar', category: 'Salt, Sugar and Jaggery', color: '#EDEDED', logo: brandLogos.parrySugar },
+  { id: 'b_eastern', name: 'Eastern', category: 'Masala & Seasoning', color: '#C0392B', logo: brandLogos.eastern },
+  { id: 'b_priyafoods', name: 'Priya Foods', category: 'Pickles and Chutney', color: '#C0392B', logo: brandLogos.priyaFoods },
+  { id: 'b_nippo', name: 'Nippo', category: 'Pooja Needs', color: '#E0B04A', logo: brandLogos.nippo },
+  { id: 'b_doublehorse', name: 'Double Horse', category: 'Dals and Pulses', color: '#E8E4D8', logo: brandLogos.doubleHorse },
+  { id: 'b_himalaya', name: 'Himalaya', category: 'Beauty & Hygiene', color: '#3E7C3A', logo: brandLogos.himalaya },
 ];
 
 export const offers: Offer[] = [
@@ -793,7 +854,7 @@ export const homeDistributors: { id: string; brand: string; distributor: string;
   { id: 'hd3', brand: 'Aashirvaad', distributor: 'Omkar Enterprices', logo: brandLogos.aashirvaad },
   { id: 'hd4', brand: 'Ruchi Gold Oil', distributor: 'Shri Sai Krishna Traders', logo: brandLogos.ruchiGold },
   { id: 'hd5', brand: 'Ajay Care', distributor: 'Sri Sairam Enterprises', logo: brandLogos.ajay },
-  { id: 'hd6', brand: 'Mysore Sandal', distributor: 'SR Enterprises', logo: brandLogos.mysoreSandal },
+  { id: 'hd6', brand: 'Mysore Sandal', distributor: 'Shri Sai Krishna Traders', logo: brandLogos.mysoreSandal },
   { id: 'hd7', brand: 'Cycle', distributor: 'Sri Sairam Enterprises', logo: brandLogos.cycle },
   { id: 'hd8', brand: 'Vicco', distributor: 'SR Enterprises', logo: brandLogos.vicco },
   { id: 'hd9', brand: 'GD Hing', distributor: 'Venkateswara Agencies', logo: brandLogos.gdHing },
@@ -817,7 +878,7 @@ export const homeBrands = [
   { id: 'hb14', label: 'Sri Lalitha', logo: brandLogos.sriLalitha },
   { id: 'hb15', label: 'Mysore Sandal', logo: brandLogos.mysoreSandal },
   { id: 'hb16', label: 'Fortune Oil', logo: brandLogos.fortune },
-  { id: 'hb17', label: 'Zindha Tilismath', logo: brandLogos.zindaTilismath },
+  { id: 'hb17', label: 'Zinda Tilismath', logo: brandLogos.zindaTilismath },
   { id: 'hb18', label: 'Dwibhashi Ayurveda', logo: brandLogos.dwibhashi },
   { id: 'hb19', label: 'Vicco', logo: brandLogos.vicco },
   { id: 'hb20', label: 'Black Rose Hair Color', logo: brandLogos.blackRose },
