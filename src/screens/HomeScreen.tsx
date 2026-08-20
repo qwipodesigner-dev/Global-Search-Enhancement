@@ -16,6 +16,7 @@ import { BottomNav } from '../components/BottomNav';
 import { NetworkPattern } from '../components/NetworkPattern';
 import { WholesalerHome } from '../components/WholesalerHome';
 import { homeDistributors, homeBrands, brands } from '../data/catalog';
+import { sellerByName, sellerForBrandLabel } from '../data/distributorList';
 import { banners, wholesalerBanners, ui } from '../assets';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
@@ -149,20 +150,12 @@ export function HomeScreen({ navigation }: Props) {
             <Pressable
               key={d.id}
               style={styles.distCard}
-              onPress={() =>
-                // This rail is a distributor × brand pairing, so filter on both —
-                // the subheading ("Freedom Oil - N Products") must match the list.
-                navigation.navigate('ProductList', {
-                  title: d.distributor,
-                  crumbs: ['Distributors', d.distributor, d.brand],
-                  filter: {
-                    distributor: d.distributor,
-                    brand: brandNameFor(d.brand),
-                    source: 'distributor',
-                  },
-                  subtitleLabel: d.brand,
-                })
-              }
+              onPress={() => {
+                // A distributor tile opens the directory isolated to that
+                // seller; unknown sellers fall back to the full list.
+                const seller = sellerByName(d.distributor);
+                navigation.navigate('DistributorList', seller ? { sellerId: seller.id } : undefined);
+              }}
             >
               <View style={[styles.logoBox, d.bg ? { backgroundColor: d.bg } : null]}>
                 <Image source={d.logo} style={styles.logoImg} resizeMode="contain" />
@@ -174,7 +167,7 @@ export function HomeScreen({ navigation }: Props) {
         </ScrollView>
 
         {/* ── All Brands — 2 rows, scrolls horizontally (Frame 7060) ── */}
-        <SectionHeader title="All Brands" />
+        <SectionHeader title="All Brands" onSeeAll={() => navigation.navigate('DistributorList')} />
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -186,14 +179,12 @@ export function HomeScreen({ navigation }: Props) {
                 <Pressable
                   key={b.id}
                   style={styles.brandTile}
-                  onPress={() =>
-                    navigation.navigate('ProductList', {
-                      title: b.label,
-                      crumbs: ['Brands', b.label],
-                      filter: { brand: brandNameFor(b.label), source: 'distributor' },
-                      subtitleLabel: b.label,
-                    })
-                  }
+                  onPress={() => {
+                    // A brand opens the directory isolated to the seller
+                    // carrying it; unlisted brands fall back to the full list.
+                    const seller = sellerForBrandLabel(b.label);
+                    navigation.navigate('DistributorList', seller ? { sellerId: seller.id } : undefined);
+                  }}
                 >
                   <View style={[styles.brandCircle, b.bg ? { backgroundColor: b.bg } : null]}>
                     <Image source={b.logo} style={styles.brandImg} resizeMode="contain" />

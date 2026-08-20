@@ -7,6 +7,7 @@ import { SearchResultsScreen } from '../screens/SearchResultsScreen';
 import { ProductListScreen } from '../screens/ProductListScreen';
 import { CategoryGridScreen } from '../screens/CategoryGridScreen';
 import { DistributorListScreen } from '../screens/DistributorListScreen';
+import { SellerHubScreen } from '../screens/SellerHubScreen';
 import { ReorderScreen } from '../screens/ReorderScreen';
 import { CartScreen } from '../screens/CartScreen';
 import { ViewItemsScreen } from '../screens/ViewItemsScreen';
@@ -33,6 +34,7 @@ export function RootNavigator() {
       <Stack.Screen name="ProductList" component={ProductListScreen} />
       <Stack.Screen name="CategoryGrid" component={CategoryGridScreen} />
       <Stack.Screen name="DistributorList" component={DistributorListScreen} />
+      <Stack.Screen name="SellerHub" component={SellerHubScreen} />
       <Stack.Screen name="Reorder" component={ReorderScreen} />
       <Stack.Screen name="Cart" component={CartScreen} />
       <Stack.Screen name="ViewItems" component={ViewItemsScreen} />
