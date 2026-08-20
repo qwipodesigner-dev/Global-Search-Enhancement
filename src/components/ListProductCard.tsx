@@ -29,7 +29,7 @@ export function ListProductCard({ product }: { product: Product }) {
 
       <PriceBand product={product} showFreeDelivery />
 
-      <ActionsRow />
+      <ActionsRow product={product} />
     </View>
   );
 }

@@ -106,7 +106,7 @@ function ReorderCard({ product }: { product: Product }) {
 
       <PriceBand product={product} />
 
-      <ActionsRow />
+      <ActionsRow product={product} />
 
       <DeliveryByLine text={product.deliveryBy} />
     </View>

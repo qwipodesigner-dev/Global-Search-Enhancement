@@ -56,4 +56,6 @@ export type RootStackParamList = {
   CreditPartners: undefined;
   /** Support info + business advisor. */
   ContactUs: undefined;
+  /** Order history with a distributor/wholesaler filter. */
+  MyOrders: undefined;
 };

@@ -28,7 +28,7 @@ export function DistributorProductCard({ product }: { product: Product }) {
 
       <PriceBand product={product} showFreeDelivery />
 
-      <ActionsRow />
+      <ActionsRow product={product} />
 
       {/* From <distributor> */}
       {!!product.from && (
