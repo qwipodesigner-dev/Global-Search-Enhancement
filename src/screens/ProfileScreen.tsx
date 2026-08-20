@@ -11,8 +11,8 @@ import { useProfile } from '../context/ProfileContext';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Profile'>;
 
-const MENU: { label: string; icon: keyof typeof Ionicons.glyphMap; route?: 'Payments' | 'CreditPartners' | 'Notifications' }[] = [
-  { label: 'My Orders', icon: 'bag-handle-outline' }, // screen not designed yet
+const MENU: { label: string; icon: keyof typeof Ionicons.glyphMap; route?: 'MyOrders' | 'Payments' | 'CreditPartners' | 'Notifications' }[] = [
+  { label: 'My Orders', icon: 'bag-handle-outline', route: 'MyOrders' },
   { label: 'Payments', icon: 'cash-outline', route: 'Payments' },
   { label: 'Credit Partners', icon: 'hand-left-outline', route: 'CreditPartners' },
   { label: 'Notifications', icon: 'notifications-outline', route: 'Notifications' },
@@ -22,7 +22,7 @@ const MENU: { label: string; icon: keyof typeof Ionicons.glyphMap; route?: 'Paym
  * Profile (Figma "Profile") — Qwipo header, the account row (opens Business
  * Details), the four menu cards, and the Contact Us / T&C / Logout footer.
  * The name and number come from the shared business profile, so they always
- * match Business Details. My Orders has no designed screen yet.
+ * match Business Details.
  */
 export function ProfileScreen({ navigation }: Props) {
   const { profile } = useProfile();

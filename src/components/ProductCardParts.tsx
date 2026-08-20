@@ -3,6 +3,7 @@ import { View, Text, Image, Pressable, ScrollView, StyleSheet } from 'react-nati
 import { Ionicons } from '@expo/vector-icons';
 import { colors, radii, font } from '../theme/theme';
 import { Product } from '../data/catalog';
+import { useAddToCart } from '../context/AddToCartContext';
 
 /** Shared pieces of the Distributor / Wholesaler product cards (Figma export). */
 
@@ -146,15 +147,16 @@ export function DeliveryByLine({ text }: { text?: string }) {
   );
 }
 
-/** Discounts (green) + Add (blue) row. */
-export function ActionsRow() {
+/** Discounts (green) + Add (blue) row; Add opens the Add to Cart sheet. */
+export function ActionsRow({ product }: { product?: Product }) {
+  const { open } = useAddToCart();
   return (
     <View style={s.actions}>
       <Pressable style={s.discountBtn}>
         <Text style={s.discountTxt}>Discounts</Text>
         <Ionicons name="caret-down" size={14} color={colors.white} />
       </Pressable>
-      <Pressable style={s.addBtn}>
+      <Pressable style={s.addBtn} onPress={product ? () => open(product) : undefined}>
         <Ionicons name="add-circle-outline" size={20} color={colors.white} />
         <Text style={s.addTxt}>Add</Text>
       </Pressable>

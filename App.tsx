@@ -18,6 +18,7 @@ import { SearchProvider } from './src/context/SearchContext';
 import { CartProvider } from './src/context/CartContext';
 import { LocationProvider } from './src/context/LocationContext';
 import { ProfileProvider } from './src/context/ProfileContext';
+import { AddToCartProvider } from './src/context/AddToCartContext';
 import { colors } from './src/theme/theme';
 
 // Remove the browser's default focus ring on inputs so the web preview
@@ -55,10 +56,12 @@ export default function App() {
         <LocationProvider>
         <ProfileProvider>
         <PhoneFrame>
-          <NavigationContainer>
-            <RootNavigator />
-          </NavigationContainer>
-          <StatusBar style="dark" />
+          <AddToCartProvider>
+            <NavigationContainer>
+              <RootNavigator />
+            </NavigationContainer>
+            <StatusBar style="dark" />
+          </AddToCartProvider>
         </PhoneFrame>
         </ProfileProvider>
         </LocationProvider>
